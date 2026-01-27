@@ -4,10 +4,9 @@
 
 - [x] Filament Installieren
 - [x] Pint Formatter und Linter konfigurieren, mit Test Runner
-- [ ] Laravel Boost, AI Guideliens, Filament Blueprint hinzufügen
+- [x] Laravel Boost, AI Guideliens hinzufügen
 - [ ] Automatische Pipeline
 
-- [ ] Logo
 - [ ] Filament Admin Dashboard
   - [ ] Events verwalten
     - [ ] Erstellen
@@ -24,3 +23,5 @@
   - [ ] Formular hinzufügen für jede Person, die man registrieren möchte
   - [ ] Konfiguriertes Formular wird angezeigt
   - [ ] Abschickbar und dann gibts eine Art Quittung bzw. Vorweisebildschirm
+
+- [ ] Docker Composer with Docker Image to run it self-hosted

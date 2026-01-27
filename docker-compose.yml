@@ -1,0 +1,42 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_URL=http://localhost:8000
+      - DB_CONNECTION=pgsql
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=eintrittli
+      - DB_USERNAME=eintrittli
+      - DB_PASSWORD=${DB_PASSWORD:-secret}
+      - SESSION_DRIVER=database
+      - CACHE_STORE=database
+    volumes:
+      - storage:/var/www/html/storage/app
+    restart: unless-stopped
+
+  db:
+    image: postgres:18-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=eintrittli
+      - POSTGRES_USER=eintrittli
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-secret}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eintrittli"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  storage:
