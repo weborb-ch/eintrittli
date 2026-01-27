@@ -2,10 +2,10 @@
 
 ## TODO Liste für v1
 
-- [ ] Filament Installieren
-- [ ] Pint Formatter und Linter konfigurieren, mit Test Runner
-- [ ] Automatische Pipeline
+- [x] Filament Installieren
+- [x] Pint Formatter und Linter konfigurieren, mit Test Runner
 - [ ] Laravel Boost, AI Guideliens, Filament Blueprint hinzufügen
+- [ ] Automatische Pipeline
 
 - [ ] Logo
 - [ ] Filament Admin Dashboard
