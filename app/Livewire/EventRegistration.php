@@ -229,11 +229,9 @@ class EventRegistration extends SimplePage
         }
         RateLimiter::hit($key, 3600);
 
-        $data = $this->form->getState();
-
         $this->registration = Registration::create([
             'event_id' => $this->event->id,
-            'data' => $data,
+            'data' => $this->data,
         ]);
 
         Notification::make()
