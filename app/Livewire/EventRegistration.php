@@ -109,11 +109,17 @@ class EventRegistration extends SimplePage
     {
         return Section::make()
             ->schema([
-                TextEntry::make('registered_at')
-                    ->label(__('Registered'))
-                    ->state(fn () => $this->registration?->created_at?->format('d.m.Y H:i'))
+                TextEntry::make('confirmation_code')
+                    ->label(__('Confirmation Code'))
+                    ->state(fn () => $this->registration?->confirmation_code)
+                    ->size('lg')
+                    ->weight('bold')
+                    ->copyable()
                     ->icon('heroicon-o-check-circle')
                     ->iconColor('success'),
+                TextEntry::make('registered_at')
+                    ->label(__('Registered'))
+                    ->state(fn () => $this->registration?->created_at?->format('d.m.Y H:i')),
             ])
             ->contained(false)
             ->visible(fn () => $this->registration !== null);
@@ -123,11 +129,11 @@ class EventRegistration extends SimplePage
     {
         return Section::make()
             ->schema([
-                IconEntry::make('status')
+                TextEntry::make('closed_status')
                     ->label(__('Status'))
-                    ->state('closed')
+                    ->state(fn () => $this->getClosedSubheading())
                     ->icon('heroicon-o-clock')
-                    ->color('warning')
+                    ->iconColor('warning')
                     ->hiddenLabel(),
             ])
             ->contained(false)
@@ -152,6 +158,7 @@ class EventRegistration extends SimplePage
         return Section::make()
             ->schema([
                 FormComponent::make($this->getFormSchema())
+                    ->statePath('data')
                     ->livewireSubmitHandler('register')
                     ->footer([
                         Actions::make([
