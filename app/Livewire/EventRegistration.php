@@ -20,9 +20,9 @@ use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Form as FormComponent;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Colors\Color;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Collection;
-use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\RateLimiter;
 
 /**
