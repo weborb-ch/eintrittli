@@ -68,23 +68,6 @@ class EventRegistration extends SimplePage
         return $this->event->name ?? __('Registration');
     }
 
-    public function getSubheading(): string|Htmlable|null
-    {
-        if ($this->registration) {
-            return __('Your confirmation code: :code', ['code' => $this->registration->confirmation_code]);
-        }
-
-        if (! $this->event->isRegistrationOpen()) {
-            return $this->getClosedSubheading();
-        }
-
-        if ($this->event->registration_closes_at !== null) {
-            return __('Registration closes :date', ['date' => $this->event->registration_closes_at->format('d.m.Y H:i')]);
-        }
-
-        return null;
-    }
-
     protected function getClosedSubheading(): string
     {
         if ($this->event->registration_opens_at?->isFuture()) {
