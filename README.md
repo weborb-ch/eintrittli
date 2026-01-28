@@ -30,8 +30,8 @@ Die Anwendung läuft auf Port 8000.
 |----------|----------|-------------|
 | `APP_KEY` | Ja | Base64 Schlüssel |
 | `APP_URL` | Ja | Öffentlicher URL der Applikation |
-| `DB_HOST` | Ja | PostgreSQL Passwort|
-| `DB_PORT` | Ja | PostgreSQL Passwort|
-| `DB_DATABASE` | Ja | PostgreSQL Passwort|
-| `DB_USERNAME` | Ja | PostgreSQL Passwort|
+| `DB_HOST` | Ja | PostgreSQL Hostname |
+| `DB_PORT` | Ja | PostgreSQL Port (default: 5432) |
+| `DB_DATABASE` | Ja | PostgreSQL Datenbank |
+| `DB_USERNAME` | Ja | PostgreSQL Nutzer |
 | `DB_PASSWORD` | Ja | PostgreSQL Passwort|
