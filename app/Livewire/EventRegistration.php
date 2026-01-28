@@ -231,13 +231,13 @@ class EventRegistration extends SimplePage
         if (RateLimiter::tooManyAttempts($key, 10)) {
             Notification::make()
                 ->title('Too many attempts')
-                ->body('Please try again later.')
+                ->body('Please try again in an hour.')
                 ->danger()
                 ->send();
 
             return;
         }
-        RateLimiter::hit($key, 60);
+        RateLimiter::hit($key, 3600);
 
         $data = $this->form->getState();
 
