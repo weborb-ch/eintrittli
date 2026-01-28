@@ -21,7 +21,7 @@ class EventResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendarDays;
 
-    protected static string | UnitEnum | null $navigationGroup = "Administration";
+    protected static string|UnitEnum|null $navigationGroup = 'Administration';
 
     public static function form(Schema $schema): Schema
     {

@@ -21,7 +21,7 @@ class FormResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Bars3BottomLeft;
 
-    protected static string | UnitEnum | null $navigationGroup = "Administration";
+    protected static string|UnitEnum|null $navigationGroup = 'Administration';
 
     public static function form(Schema $schema): Schema
     {
