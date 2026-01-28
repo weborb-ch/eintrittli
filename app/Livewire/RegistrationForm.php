@@ -7,14 +7,24 @@ use App\Models\Event;
 use App\Models\Form;
 use App\Models\FormField;
 use App\Models\Registration;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Component;
+use Filament\Schemas\Concerns\InteractsWithSchemas;
+use Filament\Schemas\Contracts\HasSchemas;
+use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
-use Livewire\Component;
+use Livewire\Component as LivewireComponent;
 
-class RegistrationForm extends Component
+class RegistrationForm extends LivewireComponent implements HasSchemas
 {
+    use InteractsWithSchemas;
+
     #[Locked]
     public Event $event;
 
@@ -28,59 +38,54 @@ class RegistrationForm extends Component
         $this->event = $event->load('form.fields');
     }
 
-    /** @return array<string, array<int, string>> */
-    public function rules(): array
+    public function form(Schema $schema): Schema
     {
-        $rules = [];
+        return $schema
+            ->components($this->getFormSchema())
+            ->statePath('formData');
+    }
 
-        $form = $this->event->form;
-        if (! $form instanceof Form) {
-            return $rules;
+    /** @return array<int, Component> */
+    protected function getFormSchema(): array
+    {
+        $components = [];
+
+        $eventForm = $this->event->form;
+        if (! $eventForm instanceof Form) {
+            return $components;
         }
 
         /** @var Collection<int, FormField> $fields */
-        $fields = $form->fields;
+        $fields = $eventForm->fields;
 
         foreach ($fields as $field) {
-            $fieldRules = [];
-
-            if ($field->is_required) {
-                $fieldRules[] = 'required';
-            } else {
-                $fieldRules[] = 'nullable';
-            }
-
-            $fieldRules[] = match ($field->type) {
-                FormFieldType::Email => 'email',
-                FormFieldType::Number => 'numeric',
-                FormFieldType::Date => 'date',
-                FormFieldType::Boolean => 'boolean',
-                FormFieldType::Select => 'in:' . implode(',', $field->options ?? []),
-                FormFieldType::Text => 'string|max:1000',
+            $component = match ($field->type) {
+                FormFieldType::Text => TextInput::make($field->name)
+                    ->label($field->label)
+                    ->maxLength(1000),
+                FormFieldType::Email => TextInput::make($field->name)
+                    ->label($field->label)
+                    ->email(),
+                FormFieldType::Number => TextInput::make($field->name)
+                    ->label($field->label)
+                    ->numeric(),
+                FormFieldType::Date => DatePicker::make($field->name)
+                    ->label($field->label),
+                FormFieldType::Boolean => Checkbox::make($field->name)
+                    ->label($field->label),
+                FormFieldType::Select => Select::make($field->name)
+                    ->label($field->label)
+                    ->options(array_combine($field->options ?? [], $field->options ?? [])),
             };
 
-            $rules["formData.{$field->name}"] = $fieldRules;
-        }
-
-        return $rules;
-    }
-
-    /** @return array<string, string> */
-    public function validationAttributes(): array
-    {
-        $attributes = [];
-
-        $form = $this->event->form;
-        if ($form instanceof Form) {
-            /** @var Collection<int, FormField> $fields */
-            $fields = $form->fields;
-
-            foreach ($fields as $field) {
-                $attributes["formData.{$field->name}"] = $field->label;
+            if ($field->is_required) {
+                $component->required();
             }
+
+            $components[] = $component;
         }
 
-        return $attributes;
+        return $components;
     }
 
     public function submit(): void
@@ -91,7 +96,7 @@ class RegistrationForm extends Component
             return;
         }
 
-        $key = 'registration:' . request()->ip();
+        $key = 'registration:'.request()->ip();
         if (RateLimiter::tooManyAttempts($key, 10)) {
             $this->addError('form', 'Too many attempts. Please try again later.');
 
@@ -99,7 +104,7 @@ class RegistrationForm extends Component
         }
         RateLimiter::hit($key, 60);
 
-        $this->validate();
+        $this->getSchema('form')->validate();
 
         $this->registration = Registration::create([
             'event_id' => $this->event->id,

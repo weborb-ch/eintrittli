@@ -20,6 +20,10 @@ class EventsTable
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('code')
+                    ->label('Code')
+                    ->copyable()
+                    ->badge(),
                 TextColumn::make('form.name')
                     ->label('Form')
                     ->placeholder('No form'),
@@ -42,9 +46,6 @@ class EventsTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
-            ])
-            ->filters([
-                //
             ])
             ->recordActions([
                 Action::make('qr_code')

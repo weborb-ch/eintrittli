@@ -12,6 +12,7 @@ class Registration extends Model
         'event_id',
         'data',
         'confirmation_code',
+        'notes',
     ];
 
     protected function casts(): array

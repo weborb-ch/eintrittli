@@ -12,7 +12,7 @@ class Event extends Model
     protected $fillable = [
         'form_id',
         'name',
-        'slug',
+        'code',
         'registration_opens_at',
         'registration_closes_at',
     ];
@@ -28,10 +28,19 @@ class Event extends Model
     protected static function booted(): void
     {
         static::creating(function (Event $event) {
-            if (empty($event->slug)) {
-                $event->slug = Str::uuid()->toString();
+            if (empty($event->code)) {
+                $event->code = self::generateUniqueCode();
             }
         });
+    }
+
+    public static function generateUniqueCode(): string
+    {
+        do {
+            $code = strtolower(Str::random(6));
+        } while (self::where('code', $code)->exists());
+
+        return $code;
     }
 
     public function form(): BelongsTo
@@ -48,11 +57,10 @@ class Event extends Model
     {
         $now = now();
 
-        if ($this->registration_opens_at && $now->lt($this->registration_opens_at)) {
-            return false;
-        }
-
-        if ($this->registration_closes_at && $now->gt($this->registration_closes_at)) {
+        if (
+            $this->registration_opens_at && $now->lt($this->registration_opens_at) ||
+            $this->registration_closes_at && $now->gt($this->registration_closes_at)
+        ) {
             return false;
         }
 
@@ -61,6 +69,6 @@ class Event extends Model
 
     public function getRegistrationUrl(): string
     {
-        return url("/register/{$this->slug}");
+        return url("/r/{$this->code}");
     }
 }
