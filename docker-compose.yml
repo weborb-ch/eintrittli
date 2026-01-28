@@ -18,8 +18,6 @@ services:
       - DB_DATABASE=eintrittli
       - DB_USERNAME=eintrittli
       - DB_PASSWORD=${DB_PASSWORD:-secret}
-      - SESSION_DRIVER=database
-      - CACHE_STORE=database
     volumes:
       - storage:/var/www/html/storage/app
     restart: unless-stopped
