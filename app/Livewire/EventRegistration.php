@@ -114,6 +114,7 @@ class EventRegistration extends SimplePage
                     ->icon('heroicon-o-check-circle')
                     ->iconColor('success'),
             ])
+            ->contained(false)
             ->visible(fn () => $this->registration !== null);
     }
 
@@ -128,6 +129,7 @@ class EventRegistration extends SimplePage
                     ->color('warning')
                     ->hiddenLabel(),
             ])
+            ->contained(false)
             ->visible(fn () => $this->registration === null && ! $this->event?->isRegistrationOpen());
     }
 
@@ -140,6 +142,7 @@ class EventRegistration extends SimplePage
                     ->state('')
                     ->hiddenLabel(),
             ])
+            ->contained(false)
             ->visible(fn () => $this->registration === null && $this->event?->isRegistrationOpen() && ! $this->event?->form);
     }
 
@@ -157,6 +160,7 @@ class EventRegistration extends SimplePage
                         ])->fullWidth(),
                     ]),
             ])
+            ->contained(false)
             ->visible(fn () => $this->registration === null && $this->event?->isRegistrationOpen() && $this->event?->form !== null);
     }
 
