@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
+/**
+ * @property Event $event
+ * @property array<string, mixed> $data
+ * @property string $confirmation_code
+ * @property string|null $notes
+ */
 class Registration extends Model
 {
     protected $fillable = [

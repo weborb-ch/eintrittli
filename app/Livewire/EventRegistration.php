@@ -20,9 +20,9 @@ use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Form as FormComponent;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Colors\Color;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Collection;
-use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\RateLimiter;
 
 /**
@@ -56,7 +56,7 @@ class EventRegistration extends SimplePage
 
     public function getTitle(): string|Htmlable
     {
-        return $this->event?->name ?? 'Registration';
+        return $this->event->name ?? 'Registration';
     }
 
     public function getHeading(): string|Htmlable|null
@@ -65,7 +65,7 @@ class EventRegistration extends SimplePage
             return 'Registration Successful';
         }
 
-        return $this->event?->name ?? 'Registration';
+        return $this->event->name ?? 'Registration';
     }
 
     public function getSubheading(): string|Htmlable|null
@@ -74,11 +74,11 @@ class EventRegistration extends SimplePage
             return 'Your confirmation code: '.$this->registration->confirmation_code;
         }
 
-        if (! $this->event?->isRegistrationOpen()) {
+        if (! $this->event->isRegistrationOpen()) {
             return $this->getClosedSubheading();
         }
 
-        if ($this->event?->registration_closes_at) {
+        if ($this->event->registration_closes_at !== null) {
             return 'Registration closes '.$this->event->registration_closes_at->format('F j, Y \a\t H:i');
         }
 
@@ -87,7 +87,7 @@ class EventRegistration extends SimplePage
 
     protected function getClosedSubheading(): string
     {
-        if ($this->event?->registration_opens_at?->isFuture()) {
+        if ($this->event->registration_opens_at?->isFuture()) {
             return 'Opens '.$this->event->registration_opens_at->format('F j, Y \a\t H:i');
         }
 
@@ -131,7 +131,7 @@ class EventRegistration extends SimplePage
                     ->hiddenLabel(),
             ])
             ->contained(false)
-            ->visible(fn () => $this->registration === null && ! $this->event?->isRegistrationOpen());
+            ->visible(fn () => $this->registration === null && ! $this->event->isRegistrationOpen());
     }
 
     protected function getNoFormSection(): Section
@@ -144,7 +144,7 @@ class EventRegistration extends SimplePage
                     ->hiddenLabel(),
             ])
             ->contained(false)
-            ->visible(fn () => $this->registration === null && $this->event?->isRegistrationOpen() && ! $this->event?->form);
+            ->visible(fn () => $this->registration === null && $this->event->isRegistrationOpen() && $this->event->form === null);
     }
 
     protected function getRegistrationFormSection(): Section
@@ -163,7 +163,7 @@ class EventRegistration extends SimplePage
                     ]),
             ])
             ->contained(false)
-            ->visible(fn () => $this->registration === null && $this->event?->isRegistrationOpen() && $this->event?->form !== null);
+            ->visible(fn () => $this->registration === null && $this->event->isRegistrationOpen() && $this->event->form !== null);
     }
 
     public function form(Schema $schema): Schema
@@ -218,7 +218,7 @@ class EventRegistration extends SimplePage
 
     public function register(): void
     {
-        if (! $this->event?->isRegistrationOpen()) {
+        if (! $this->event->isRegistrationOpen()) {
             Notification::make()
                 ->title('Registration is not open')
                 ->danger()
