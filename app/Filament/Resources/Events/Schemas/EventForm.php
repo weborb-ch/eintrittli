@@ -16,18 +16,25 @@ class EventForm
             ->components([
                 TextInput::make('name')
                     ->required()
+                    ->columnSpanFull()
                     ->maxLength(255),
                 Select::make('form_id')
                     ->relationship('form', 'name')
                     ->preload()
-                    ->searchable(),
+                    ->searchable()
+                    ->required()
+                    ->columnSpanFull()
+                    ->native(false),
                 Section::make('Registration Window')
                     ->schema([
                         DateTimePicker::make('registration_opens_at')
-                            ->label('Opens at'),
+                            ->label('Opens at')
+                            ->native(false),
                         DateTimePicker::make('registration_closes_at')
-                            ->label('Closes at'),
+                            ->label('Closes at')
+                            ->native(false),
                     ])
+                    ->columnSpanFull()
                     ->columns(2),
             ]);
     }

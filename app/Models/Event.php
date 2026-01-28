@@ -13,6 +13,7 @@ class Event extends Model
         'form_id',
         'name',
         'slug',
+        'short_code',
         'registration_opens_at',
         'registration_closes_at',
     ];
@@ -29,7 +30,10 @@ class Event extends Model
     {
         static::creating(function (Event $event) {
             if (empty($event->slug)) {
-                $event->slug = Str::uuid()->toString();
+                $event->slug = Str::slug($event->name).'-'.Str::random(6);
+            }
+            if (empty($event->short_code)) {
+                $event->short_code = strtoupper(Str::random(6));
             }
         });
     }
@@ -48,11 +52,10 @@ class Event extends Model
     {
         $now = now();
 
-        if ($this->registration_opens_at && $now->lt($this->registration_opens_at)) {
-            return false;
-        }
-
-        if ($this->registration_closes_at && $now->gt($this->registration_closes_at)) {
+        if (
+            $this->registration_opens_at && $now->lt($this->registration_opens_at) ||
+            $this->registration_closes_at && $now->gt($this->registration_closes_at)
+        ) {
             return false;
         }
 
@@ -61,6 +64,6 @@ class Event extends Model
 
     public function getRegistrationUrl(): string
     {
-        return url("/register/{$this->slug}");
+        return url("/r/{$this->slug}/{$this->short_code}");
     }
 }

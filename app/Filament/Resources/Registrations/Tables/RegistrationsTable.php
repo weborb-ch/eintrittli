@@ -25,11 +25,6 @@ class RegistrationsTable
                 TextColumn::make('event.name')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('data')
-                    ->label('Data')
-                    ->formatStateUsing(fn (Registration $record): string => collect((array) $record->data)->map(fn ($v, $k) => "$k: $v")->take(3)->join(', '))
-                    ->limit(50)
-                    ->tooltip(fn (Registration $record): string => collect((array) $record->data)->map(fn ($v, $k) => "$k: $v")->join("\n")),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

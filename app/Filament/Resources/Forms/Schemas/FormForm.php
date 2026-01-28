@@ -20,6 +20,7 @@ class FormForm
             ->components([
                 TextInput::make('name')
                     ->required()
+                    ->columnSpanFull()
                     ->maxLength(255),
                 Textarea::make('description')
                     ->rows(3)

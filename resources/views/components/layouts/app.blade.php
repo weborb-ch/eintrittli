@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? config('app.name') }}</title>
+    @filamentStyles
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="h-full bg-gray-100 dark:bg-gray-900">
+<body class="h-full bg-gray-100 dark:bg-gray-900 antialiased">
     <div class="min-h-full">
         <main class="py-10">
             <div class="px-4 sm:px-6 lg:px-8">
@@ -15,5 +16,6 @@
             </div>
         </main>
     </div>
+    @filamentScripts
 </body>
 </html>
