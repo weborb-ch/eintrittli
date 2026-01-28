@@ -26,6 +26,7 @@ class FormForm
                     ->rows(3)
                     ->columnSpanFull(),
                 Repeater::make('fields')
+                    ->label(__('Fields'))
                     ->relationship()
                     ->orderColumn('sort_order')
                     ->reorderable()
@@ -33,6 +34,7 @@ class FormForm
                     ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
                     ->schema([
                         TextInput::make('label')
+                            ->label(__('Label'))
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
@@ -47,8 +49,9 @@ class FormForm
                             ->live(),
                         TagsInput::make('options')
                             ->visible(fn ($get) => $get('type') === FormFieldType::Select->value)
-                            ->placeholder('Add option'),
+                            ->placeholder(__('Add option')),
                         Toggle::make('is_required')
+                            ->label(__('Is required'))
                             ->default(true),
                     ])
                     ->columns(2)

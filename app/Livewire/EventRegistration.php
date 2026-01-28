@@ -44,7 +44,7 @@ class EventRegistration extends SimplePage
         $key = 'register-page:'.request()->ip();
 
         if (RateLimiter::tooManyAttempts($key, 30)) {
-            abort(429, 'Too many requests. Please try again later.');
+            abort(429, __('Too many requests. Please try again later.'));
         }
         RateLimiter::hit($key, 60);
 
@@ -56,22 +56,22 @@ class EventRegistration extends SimplePage
 
     public function getTitle(): string|Htmlable
     {
-        return $this->event->name ?? 'Registration';
+        return $this->event->name ?? __('Registration');
     }
 
     public function getHeading(): string|Htmlable|null
     {
         if ($this->registration) {
-            return 'Registration Successful';
+            return __('Registration Successful');
         }
 
-        return $this->event->name ?? 'Registration';
+        return $this->event->name ?? __('Registration');
     }
 
     public function getSubheading(): string|Htmlable|null
     {
         if ($this->registration) {
-            return 'Your confirmation code: '.$this->registration->confirmation_code;
+            return __('Your confirmation code: :code', ['code' => $this->registration->confirmation_code]);
         }
 
         if (! $this->event->isRegistrationOpen()) {
@@ -79,7 +79,7 @@ class EventRegistration extends SimplePage
         }
 
         if ($this->event->registration_closes_at !== null) {
-            return 'Registration closes '.$this->event->registration_closes_at->format('F j, Y \a\t H:i');
+            return __('Registration closes :date', ['date' => $this->event->registration_closes_at->format('d.m.Y H:i')]);
         }
 
         return null;
@@ -88,10 +88,10 @@ class EventRegistration extends SimplePage
     protected function getClosedSubheading(): string
     {
         if ($this->event->registration_opens_at?->isFuture()) {
-            return 'Opens '.$this->event->registration_opens_at->format('F j, Y \a\t H:i');
+            return __('Opens :date', ['date' => $this->event->registration_opens_at->format('d.m.Y H:i')]);
         }
 
-        return 'Registration for this event has ended.';
+        return __('Registration for this event has ended.');
     }
 
     public function content(Schema $schema): Schema
@@ -110,8 +110,8 @@ class EventRegistration extends SimplePage
         return Section::make()
             ->schema([
                 TextEntry::make('registered_at')
-                    ->label('Registered')
-                    ->state(fn () => $this->registration?->created_at?->format('F j, Y \a\t H:i'))
+                    ->label(__('Registered'))
+                    ->state(fn () => $this->registration?->created_at?->format('d.m.Y H:i'))
                     ->icon('heroicon-o-check-circle')
                     ->iconColor('success'),
             ])
@@ -124,7 +124,7 @@ class EventRegistration extends SimplePage
         return Section::make()
             ->schema([
                 IconEntry::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->state('closed')
                     ->icon('heroicon-o-clock')
                     ->color('warning')
@@ -139,7 +139,7 @@ class EventRegistration extends SimplePage
         return Section::make()
             ->schema([
                 TextEntry::make('no_form')
-                    ->label('No registration form configured for this event.')
+                    ->label(__('No registration form configured for this event.'))
                     ->state('')
                     ->hiddenLabel(),
             ])
@@ -156,7 +156,7 @@ class EventRegistration extends SimplePage
                     ->footer([
                         Actions::make([
                             Action::make('register')
-                                ->label('Register')
+                                ->label(__('Register'))
                                 ->color(Color::hex('#74B1FF'))
                                 ->submit('register'),
                         ])->fullWidth(),
@@ -220,7 +220,7 @@ class EventRegistration extends SimplePage
     {
         if (! $this->event->isRegistrationOpen()) {
             Notification::make()
-                ->title('Registration is not open')
+                ->title(__('Registration is not open'))
                 ->danger()
                 ->send();
 
@@ -230,8 +230,8 @@ class EventRegistration extends SimplePage
         $key = 'registration:'.request()->ip();
         if (RateLimiter::tooManyAttempts($key, 10)) {
             Notification::make()
-                ->title('Too many attempts')
-                ->body('Please try again in an hour.')
+                ->title(__('Too many attempts'))
+                ->body(__('Please try again in an hour.'))
                 ->danger()
                 ->send();
 
@@ -247,7 +247,7 @@ class EventRegistration extends SimplePage
         ]);
 
         Notification::make()
-            ->title('Registration successful!')
+            ->title(__('Registration successful!'))
             ->success()
             ->send();
     }

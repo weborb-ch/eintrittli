@@ -22,6 +22,16 @@ class RegistrationResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Administration';
 
+    public static function getModelLabel(): string
+    {
+        return __('Registration');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Registrations');
+    }
+
     public static function canCreate(): bool
     {
         return false;

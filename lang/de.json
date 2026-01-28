@@ -1,0 +1,63 @@
+{
+    "Registration": "Anmeldung",
+    "Registration Successful": "Anmeldung erfolgreich",
+    "Your confirmation code: :code": "Dein Bestätigungscode: :code",
+    "Registration closes :date": "Anmeldung endet :date",
+    "Opens :date": "Öffnet :date",
+    "Registration for this event has ended.": "Die Anmeldung für diesen Anlass ist beendet.",
+    "Registered": "Angemeldet",
+    "Status": "Status",
+    "No registration form configured for this event.": "Kein Anmeldeformular für diesen Anlass konfiguriert.",
+    "Register": "Anmelden",
+    "Registration is not open": "Anmeldung ist nicht geöffnet",
+    "Too many attempts": "Zu viele Versuche",
+    "Please try again in an hour.": "Bitte versuche es in einer Stunde erneut.",
+    "Too many requests. Please try again later.": "Zu viele Anfragen. Bitte versuche es später erneut.",
+    "Registration successful!": "Anmeldung erfolgreich!",
+
+    "Text": "Text",
+    "Number": "Zahl",
+    "Yes/No": "Ja/Nein",
+    "Date": "Datum",
+    "Email": "E-Mail",
+    "Selection": "Auswahl",
+
+    "Export CSV": "CSV exportieren",
+    "Confirmation Code": "Bestätigungscode",
+    "Event": "Anlass",
+    "Registered At": "Angemeldet am",
+    "Notes": "Notizen",
+    "Yes": "Ja",
+    "No": "Nein",
+
+    "Registration Window": "Anmeldezeitraum",
+    "Opens at": "Öffnet am",
+    "Closes at": "Schliesst am",
+    "Form": "Formular",
+    "No form": "Kein Formular",
+    "Registrations": "Anmeldungen",
+    "QR Code": "QR-Code",
+    "Close": "Schliessen",
+
+    "Registration Data": "Anmeldedaten",
+
+    "Add option": "Option hinzufügen",
+
+    "Scan to register": "Scannen zum Anmelden",
+    "Copy Link": "Link kopieren",
+    "Copied!": "Kopiert!",
+
+    "Events": "Anlässe",
+    "Forms": "Formulare",
+    "Administration": "Administration",
+
+    "Opens At": "Öffnet am",
+    "Closes At": "Schliesst am",
+    "Fields": "Felder",
+    "Label": "Bezeichnung",
+    "Is required": "Pflichtfeld",
+    "Code": "Code",
+    "confirmation_code": "Bestätigungscode",
+    "Confirmation code": "Bestätigungscode",
+    "fields": "Felder"
+}

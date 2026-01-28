@@ -14,12 +14,12 @@ enum FormFieldType: string
     public function label(): string
     {
         return match ($this) {
-            self::Text => 'Text',
-            self::Number => 'Number',
-            self::Boolean => 'Yes/No',
-            self::Date => 'Date',
-            self::Email => 'Email',
-            self::Select => 'Selection',
+            self::Text => __('Text'),
+            self::Number => __('Number'),
+            self::Boolean => __('Yes/No'),
+            self::Date => __('Date'),
+            self::Email => __('Email'),
+            self::Select => __('Selection'),
         };
     }
 }

@@ -23,10 +23,12 @@ class RegistrationForm
         return $schema
             ->components([
                 Placeholder::make('event')
+                    ->label(__('Event'))
                     ->content(fn (Registration $record) => $record->event->name ?? '-'),
                 Placeholder::make('confirmation_code')
+                    ->label(__('Confirmation Code'))
                     ->content(fn (Registration $record) => $record->confirmation_code),
-                Section::make('Registration Data')
+                Section::make(__('Registration Data'))
                     ->schema(fn (Registration $record) => self::getDataFields($record))
                     ->columnSpanFull()
                     ->columns(2),

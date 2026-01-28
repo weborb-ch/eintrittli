@@ -20,7 +20,7 @@ class ListRegistrations extends ListRecords
     {
         return [
             Action::make('export')
-                ->label('Export CSV')
+                ->label(__('Export CSV'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->action(fn () => $this->exportCsv()),
         ];
@@ -43,7 +43,7 @@ class ListRegistrations extends ListRecords
 
             // Header row using field labels
             $fieldLabels = $allFields->map(fn (FormField $f) => $f->label)->values()->toArray();
-            $headers = ['Confirmation Code', 'Event', 'Registered At', ...$fieldLabels, 'Notes'];
+            $headers = [__('Confirmation Code'), __('Event'), __('Registered At'), ...$fieldLabels, __('Notes')];
             fputcsv($handle, $headers);
 
             foreach ($registrations as $registration) {
@@ -75,7 +75,7 @@ class ListRegistrations extends ListRecords
         }
 
         return match ($type) {
-            FormFieldType::Boolean => $value ? 'Yes' : 'No',
+            FormFieldType::Boolean => $value ? __('Yes') : __('No'),
             FormFieldType::Date => $this->formatDate($value),
             default => (string) $value,
         };
