@@ -2,12 +2,19 @@
 
 namespace App\Filament\Resources\Registrations\Schemas;
 
+use App\Enums\FormFieldType;
+use App\Models\FormField;
 use App\Models\Registration;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Collection;
 
 class RegistrationForm
 {
@@ -29,17 +36,44 @@ class RegistrationForm
             ]);
     }
 
-    /** @return array<int, TextInput> */
+    /** @return array<int, Component> */
     private static function getDataFields(Registration $record): array
     {
-        $fields = [];
+        $components = [];
 
-        foreach ($record->data ?? [] as $key => $value) {
-            $fields[] = TextInput::make("data.{$key}")
-                ->label(ucfirst(str_replace('_', ' ', $key)))
-                ->default(is_bool($value) ? ($value ? 'Yes' : 'No') : $value);
+        /** @var Collection<int, FormField>|null $formFields */
+        $formFields = $record->event?->form?->fields;
+
+        if (! $formFields) {
+            return $components;
         }
 
-        return $fields;
+        foreach ($formFields as $field) {
+            $component = match ($field->type) {
+                FormFieldType::Text => TextInput::make("data.{$field->name}")
+                    ->label($field->label)
+                    ->maxLength(1000),
+                FormFieldType::Email => TextInput::make("data.{$field->name}")
+                    ->label($field->label)
+                    ->email(),
+                FormFieldType::Number => TextInput::make("data.{$field->name}")
+                    ->label($field->label)
+                    ->numeric(),
+                FormFieldType::Date => DatePicker::make("data.{$field->name}")
+                    ->label($field->label)
+                    ->displayFormat('d.m.Y')
+                    ->native(false),
+                FormFieldType::Boolean => Checkbox::make("data.{$field->name}")
+                    ->label($field->label),
+                FormFieldType::Select => Select::make("data.{$field->name}")
+                    ->label($field->label)
+                    ->options(array_combine($field->options ?? [], $field->options ?? []))
+                    ->native(false),
+            };
+
+            $components[] = $component;
+        }
+
+        return $components;
     }
 }
