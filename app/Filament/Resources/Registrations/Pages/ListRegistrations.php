@@ -5,7 +5,6 @@ namespace App\Filament\Resources\Registrations\Pages;
 use App\Filament\Resources\Registrations\RegistrationResource;
 use App\Models\Registration;
 use Filament\Actions\Action;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -20,7 +19,6 @@ class ListRegistrations extends ListRecords
                 ->label('Export CSV')
                 ->icon('heroicon-o-arrow-down-tray')
                 ->action(fn () => $this->exportCsv()),
-            CreateAction::make(),
         ];
     }
 
@@ -39,7 +37,7 @@ class ListRegistrations extends ListRecords
             $handle = fopen('php://output', 'w');
 
             // Header row
-            $headers = ['Confirmation Code', 'Event', 'Registered At', ...$allFieldNames];
+            $headers = ['Confirmation Code', 'Event', 'Registered At', ...$allFieldNames, 'Notes'];
             fputcsv($handle, $headers);
 
             foreach ($registrations as $registration) {
@@ -58,6 +56,8 @@ class ListRegistrations extends ListRecords
                     }
                     $row[] = $value;
                 }
+
+                $row[] = $registration->notes ?? '';
 
                 fputcsv($handle, $row);
             }
