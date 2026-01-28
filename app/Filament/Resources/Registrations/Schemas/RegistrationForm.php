@@ -44,7 +44,6 @@ class RegistrationForm
         $formFields = $record->event->form?->fields;
 
         /** @var Collection<int, FormField>|null $formFields */
-
         if (! $formFields) {
             return $components;
         }
