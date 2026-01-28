@@ -22,6 +22,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Collection;
+use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\RateLimiter;
 
 /**
@@ -156,6 +157,7 @@ class EventRegistration extends SimplePage
                         Actions::make([
                             Action::make('register')
                                 ->label('Register')
+                                ->color(Color::hex('#74B1FF'))
                                 ->submit('register'),
                         ])->fullWidth(),
                     ]),
