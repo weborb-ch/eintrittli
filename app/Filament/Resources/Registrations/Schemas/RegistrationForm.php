@@ -23,7 +23,7 @@ class RegistrationForm
         return $schema
             ->components([
                 Placeholder::make('event')
-                    ->content(fn (Registration $record) => $record->event?->name ?? '-'),
+                    ->content(fn (Registration $record) => $record->event->name ?? '-'),
                 Placeholder::make('confirmation_code')
                     ->content(fn (Registration $record) => $record->confirmation_code),
                 Section::make('Registration Data')
@@ -41,8 +41,9 @@ class RegistrationForm
     {
         $components = [];
 
+        $formFields = $record->event->form?->fields;
+
         /** @var Collection<int, FormField>|null $formFields */
-        $formFields = $record->event?->form?->fields;
 
         if (! $formFields) {
             return $components;

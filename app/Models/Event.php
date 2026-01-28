@@ -2,11 +2,19 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
+/**
+ * @property string $name
+ * @property string $code
+ * @property Carbon|null $registration_opens_at
+ * @property Carbon|null $registration_closes_at
+ * @property Form|null $form
+ */
 class Event extends Model
 {
     protected $fillable = [

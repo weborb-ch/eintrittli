@@ -9,5 +9,6 @@ parameters:
         - database/
         - resources/
         - routes/
+    excludePaths:
         - tests/
     level: 5

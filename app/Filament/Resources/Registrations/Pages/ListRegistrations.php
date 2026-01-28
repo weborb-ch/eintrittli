@@ -31,11 +31,12 @@ class ListRegistrations extends ListRecords
         $registrations = Registration::with('event.form.fields')->get();
 
         // Collect all form fields across all events (preserving field definitions)
-        /** @var Collection<string, FormField> $allFields */
         $allFields = $registrations
-            ->flatMap(fn (Registration $r) => $r->event?->form?->fields ?? collect())
+            ->flatMap(fn (Registration $r) => $r->event->form->fields ?? collect())
             ->unique('name')
             ->keyBy('name');
+
+        /** @var Collection<string, FormField> $allFields */
 
         return response()->streamDownload(function () use ($registrations, $allFields) {
             $handle = fopen('php://output', 'w');
@@ -48,13 +49,13 @@ class ListRegistrations extends ListRecords
             foreach ($registrations as $registration) {
                 $row = [
                     $registration->confirmation_code,
-                    $registration->event?->name ?? '',
+                    $registration->event->name ?? '',
                     $registration->created_at->format('d.m.Y H:i:s'),
                 ];
 
                 // Add each field value in order of form fields
                 foreach ($allFields as $fieldName => $field) {
-                    $value = $registration->data[$fieldName] ?? '';
+                    $value = $registration->data[$fieldName] ?? null;
                     $row[] = $this->formatValue($value, $field->type);
                 }
 
