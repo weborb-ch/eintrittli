@@ -41,8 +41,8 @@ class ListRegistrations extends ListRecords
         return response()->streamDownload(function () use ($registrations, $allFields) {
             $handle = fopen('php://output', 'w');
 
-            // Header row using field labels
-            $fieldLabels = $allFields->map(fn (FormField $f) => $f->label)->values()->toArray();
+            // Header row using field names
+            $fieldLabels = $allFields->map(fn (FormField $f) => $f->name)->values()->toArray();
             $headers = [__('Confirmation Code'), __('Event'), __('Registered At'), ...$fieldLabels, __('Notes')];
             fputcsv($handle, $headers);
 

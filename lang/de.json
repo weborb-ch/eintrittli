@@ -59,5 +59,8 @@
     "Code": "Code",
     "confirmation_code": "Bestätigungscode",
     "Confirmation code": "Bestätigungscode",
-    "fields": "Felder"
+    "fields": "Felder",
+    "Name": "Name",
+    "This form is used by an event and cannot be edited.": "Dieses Formular wird von einem Anlass verwendet und kann nicht bearbeitet werden.",
+    "Notice": "Hinweis"
 }

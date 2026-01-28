@@ -28,9 +28,6 @@ class Form extends Model
 
     public function isInUse(): bool
     {
-        return $this->events()
-            ->where('registration_opens_at', '<=', now())
-            ->where('registration_closes_at', '>=', now())
-            ->exists();
+        return $this->events()->exists();
     }
 }

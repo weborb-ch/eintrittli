@@ -188,21 +188,21 @@ class EventRegistration extends SimplePage
         foreach ($fields as $field) {
             $component = match ($field->type) {
                 FormFieldType::Text => TextInput::make($field->name)
-                    ->label($field->label)
+                    ->label($field->name)
                     ->maxLength(1000),
                 FormFieldType::Email => TextInput::make($field->name)
-                    ->label($field->label)
+                    ->label($field->name)
                     ->email(),
                 FormFieldType::Number => TextInput::make($field->name)
-                    ->label($field->label)
+                    ->label($field->name)
                     ->numeric(),
                 FormFieldType::Date => DatePicker::make($field->name)
                     ->native(false)
-                    ->label($field->label),
+                    ->label($field->name),
                 FormFieldType::Boolean => Checkbox::make($field->name)
-                    ->label($field->label),
+                    ->label($field->name),
                 FormFieldType::Select => Select::make($field->name)
-                    ->label($field->label)
+                    ->label($field->name)
                     ->options(array_combine($field->options ?? [], $field->options ?? [])),
             };
 
