@@ -28,7 +28,7 @@ class ListRegistrations extends ListRecords
 
     public function exportCsv(): StreamedResponse
     {
-        $registrations = Registration::with('event.form.fields')->get();
+        $registrations = $this->getFilteredTableQuery()->with('event.form.fields')->get();
 
         // Collect all form fields across all events (preserving field definitions)
         $allFields = $registrations
