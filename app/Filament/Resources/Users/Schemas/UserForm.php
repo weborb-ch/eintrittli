@@ -18,10 +18,6 @@ class UserForm
             ->components([
                 Section::make(__('User Details'))
                     ->schema([
-                        TextInput::make('name')
-                            ->label(__('Name'))
-                            ->required()
-                            ->maxLength(255),
                         TextInput::make('username')
                             ->label(__('Username'))
                             ->required()

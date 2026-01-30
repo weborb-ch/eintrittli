@@ -14,10 +14,6 @@ class UsersTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')
-                    ->label(__('Name'))
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('username')
                     ->label(__('Username'))
                     ->searchable()
