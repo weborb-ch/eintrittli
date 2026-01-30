@@ -36,8 +36,8 @@ class EventRegistration extends SimplePage
 
     public ?Registration $registration = null;
 
-    /** @var array<string, mixed>|null */
-    public ?array $data = [];
+    /** @var array<string, mixed> */
+    public array $data = [];
 
     public function mount(string $code): void
     {
@@ -50,6 +50,18 @@ class EventRegistration extends SimplePage
 
         $this->event = Event::where('code', $code)->firstOrFail();
         $this->event->load('form.fields');
+
+        $eventForm = $this->event->form;
+        if ($eventForm instanceof Form) {
+            /** @var Collection<int, FormField> $fields */
+            $fields = $eventForm->fields;
+
+            foreach ($fields as $field) {
+                if($field->type == FormFieldType::Date) {
+                    $this->data[$field->name] ??= null;
+                }
+            }
+        }
 
         $this->form->fill();
     }
@@ -159,6 +171,7 @@ class EventRegistration extends SimplePage
     public function form(Schema $schema): Schema
     {
         return $schema
+            ->components($this->getFormSchema())
             ->statePath('data');
     }
 
@@ -188,7 +201,8 @@ class EventRegistration extends SimplePage
                     ->numeric(),
                 FormFieldType::Date => DatePicker::make($field->name)
                     ->native(false)
-                    ->label($field->name),
+                    ->label($field->name)
+                    ->displayFormat('d.m.Y'),
                 FormFieldType::Boolean => Checkbox::make($field->name)
                     ->label($field->name),
                 FormFieldType::Select => Select::make($field->name)
@@ -198,6 +212,9 @@ class EventRegistration extends SimplePage
 
             if ($field->is_required) {
                 $component->required();
+                if ($field->type == FormFieldType::Date) {
+                    $component->rule('date');
+                }
             }
 
             $components[] = $component;
@@ -231,7 +248,7 @@ class EventRegistration extends SimplePage
 
         $this->registration = Registration::create([
             'event_id' => $this->event->id,
-            'data' => $this->data,
+            'data' => $this->form->getState(),
         ]);
 
         Notification::make()
