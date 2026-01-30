@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Enums\UserRole;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+/**
+ * @property UserRole $role
+ */
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -17,11 +21,22 @@ class User extends Authenticatable implements FilamentUser
         return true;
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->role === UserRole::Admin;
+    }
+
+    public function isMember(): bool
+    {
+        return $this->role === UserRole::Member;
+    }
+
     /** @var list<string> */
     protected $fillable = [
         'username',
         'name',
         'password',
+        'role',
     ];
 
     /** @var list<string> */
@@ -35,6 +50,7 @@ class User extends Authenticatable implements FilamentUser
     {
         return [
             'password' => 'hashed',
+            'role' => UserRole::class,
         ];
     }
 }

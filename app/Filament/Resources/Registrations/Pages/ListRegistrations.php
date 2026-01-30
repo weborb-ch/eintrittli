@@ -22,7 +22,8 @@ class ListRegistrations extends ListRecords
             Action::make('export')
                 ->label(__('Export CSV'))
                 ->icon('heroicon-o-arrow-down-tray')
-                ->action(fn () => $this->exportCsv()),
+                ->action(fn () => $this->exportCsv())
+                ->visible(fn () => auth()->user()?->isAdmin() ?? false),
         ];
     }
 
