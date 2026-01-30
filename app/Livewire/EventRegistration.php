@@ -12,7 +12,6 @@ use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Pages\SimplePage;
@@ -57,7 +56,7 @@ class EventRegistration extends SimplePage
             $fields = $eventForm->fields;
 
             foreach ($fields as $field) {
-                if($field->type == FormFieldType::Date) {
+                if ($field->type == FormFieldType::Date) {
                     $this->data[$field->name] ??= null;
                 }
             }

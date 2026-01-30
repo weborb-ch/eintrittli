@@ -72,7 +72,7 @@ class RegistrationForm
                     ->options(array_combine($field->options ?? [], $field->options ?? []))
                     ->native(false),
             };
-            
+
             if ($field->is_required) {
                 $component->required();
                 if ($field->type == FormFieldType::Date) {
