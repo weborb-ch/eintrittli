@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Forms\Schemas;
 
 use App\Enums\FormFieldType;
+use App\Models\Form;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
@@ -10,7 +12,6 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Str;
 
 class FormForm
 {
@@ -18,41 +19,50 @@ class FormForm
     {
         return $schema
             ->components([
+                Placeholder::make('in_use_hint')
+                    ->label(__('Notice'))
+                    ->content(__('This form is used by an event and cannot be edited.'))
+                    ->visible(fn (?Form $record) => $record?->isInUse() ?? false)
+                    ->color('danger')
+                    ->columnSpanFull(),
                 TextInput::make('name')
                     ->required()
                     ->columnSpanFull()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->disabled(fn (?Form $record) => $record?->isInUse() ?? false),
                 Textarea::make('description')
                     ->rows(3)
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->disabled(fn (?Form $record) => $record?->isInUse() ?? false),
                 Repeater::make('fields')
+                    ->label(__('Fields'))
                     ->relationship()
                     ->orderColumn('sort_order')
                     ->reorderable()
                     ->collapsible()
-                    ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
+                    ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
                     ->schema([
-                        TextInput::make('label')
-                            ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(fn ($state, callable $set, $get) => $set('name', $get('name') ?: Str::snake($state))),
                         TextInput::make('name')
+                            ->label(__('Name'))
                             ->required()
-                            ->maxLength(255)
-                            ->rules(['alpha_dash']),
+                            ->maxLength(255),
                         Select::make('type')
                             ->options(collect(FormFieldType::cases())->mapWithKeys(fn ($type) => [$type->value => $type->label()]))
                             ->required()
                             ->live(),
                         TagsInput::make('options')
                             ->visible(fn ($get) => $get('type') === FormFieldType::Select->value)
-                            ->placeholder('Add option'),
+                            ->placeholder(__('Add option')),
                         Toggle::make('is_required')
+                            ->label(__('Is required'))
                             ->default(true),
                     ])
                     ->columns(2)
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->disabled(fn (?Form $record) => $record?->isInUse() ?? false)
+                    ->addable(fn (?Form $record) => ! ($record?->isInUse() ?? false))
+                    ->deletable(fn (?Form $record) => ! ($record?->isInUse() ?? false))
+                    ->reorderable(fn (?Form $record) => ! ($record?->isInUse() ?? false)),
             ]);
     }
 }

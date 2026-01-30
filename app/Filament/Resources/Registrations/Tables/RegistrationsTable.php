@@ -20,6 +20,7 @@ class RegistrationsTable
                 TextColumn::make('confirmation_code')
                     ->searchable()
                     ->copyable()
+                    ->label(__('Confirmation code'))
                     ->fontFamily('mono'),
                 TextColumn::make('event.name')
                     ->sortable()
@@ -27,7 +28,7 @@ class RegistrationsTable
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->label('Registered at'),
+                    ->label(__('Registered At')),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([

@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property FormFieldType $type
  * @property array<int, string>|null $options
  * @property bool $is_required
- * @property string $label
  * @property string $name
  * @property int $sort_order
  */
@@ -19,7 +18,6 @@ class FormField extends Model
     protected $fillable = [
         'form_id',
         'type',
-        'label',
         'name',
         'options',
         'is_required',

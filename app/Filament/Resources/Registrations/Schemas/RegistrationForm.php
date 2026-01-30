@@ -23,10 +23,12 @@ class RegistrationForm
         return $schema
             ->components([
                 Placeholder::make('event')
+                    ->label(__('Event'))
                     ->content(fn (Registration $record) => $record->event->name ?? '-'),
                 Placeholder::make('confirmation_code')
+                    ->label(__('Confirmation Code'))
                     ->content(fn (Registration $record) => $record->confirmation_code),
-                Section::make('Registration Data')
+                Section::make(__('Registration Data'))
                     ->schema(fn (Registration $record) => self::getDataFields($record))
                     ->columnSpanFull()
                     ->columns(2),
@@ -51,25 +53,32 @@ class RegistrationForm
         foreach ($formFields as $field) {
             $component = match ($field->type) {
                 FormFieldType::Text => TextInput::make("data.{$field->name}")
-                    ->label($field->label)
+                    ->label($field->name)
                     ->maxLength(1000),
                 FormFieldType::Email => TextInput::make("data.{$field->name}")
-                    ->label($field->label)
+                    ->label($field->name)
                     ->email(),
                 FormFieldType::Number => TextInput::make("data.{$field->name}")
-                    ->label($field->label)
+                    ->label($field->name)
                     ->numeric(),
                 FormFieldType::Date => DatePicker::make("data.{$field->name}")
-                    ->label($field->label)
+                    ->label($field->name)
                     ->displayFormat('d.m.Y')
                     ->native(false),
                 FormFieldType::Boolean => Checkbox::make("data.{$field->name}")
-                    ->label($field->label),
+                    ->label($field->name),
                 FormFieldType::Select => Select::make("data.{$field->name}")
-                    ->label($field->label)
+                    ->label($field->name)
                     ->options(array_combine($field->options ?? [], $field->options ?? []))
                     ->native(false),
             };
+
+            if ($field->is_required) {
+                $component->required();
+                if ($field->type == FormFieldType::Date) {
+                    $component->rule('date');
+                }
+            }
 
             $components[] = $component;
         }

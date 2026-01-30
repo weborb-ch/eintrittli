@@ -25,13 +25,13 @@ class EventForm
                     ->required()
                     ->columnSpanFull()
                     ->native(false),
-                Section::make('Registration Window')
+                Section::make(__('Registration Window'))
                     ->schema([
                         DateTimePicker::make('registration_opens_at')
-                            ->label('Opens at')
+                            ->label(__('Opens at'))
                             ->native(false),
                         DateTimePicker::make('registration_closes_at')
-                            ->label('Closes at')
+                            ->label(__('Closes at'))
                             ->native(false),
                     ])
                     ->columnSpanFull()

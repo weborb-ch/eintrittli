@@ -12,7 +12,6 @@ use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Pages\SimplePage;
@@ -36,62 +35,57 @@ class EventRegistration extends SimplePage
 
     public ?Registration $registration = null;
 
-    /** @var array<string, mixed>|null */
-    public ?array $data = [];
+    /** @var array<string, mixed> */
+    public array $data = [];
 
     public function mount(string $code): void
     {
         $key = 'register-page:'.request()->ip();
 
         if (RateLimiter::tooManyAttempts($key, 30)) {
-            abort(429, 'Too many requests. Please try again later.');
+            abort(429, __('Too many requests. Please try again later.'));
         }
         RateLimiter::hit($key, 60);
 
         $this->event = Event::where('code', $code)->firstOrFail();
         $this->event->load('form.fields');
 
+        $eventForm = $this->event->form;
+        if ($eventForm instanceof Form) {
+            /** @var Collection<int, FormField> $fields */
+            $fields = $eventForm->fields;
+
+            foreach ($fields as $field) {
+                if ($field->type == FormFieldType::Date) {
+                    $this->data[$field->name] ??= null;
+                }
+            }
+        }
+
         $this->form->fill();
     }
 
     public function getTitle(): string|Htmlable
     {
-        return $this->event->name ?? 'Registration';
+        return $this->event->name ?? __('Registration');
     }
 
     public function getHeading(): string|Htmlable|null
     {
         if ($this->registration) {
-            return 'Registration Successful';
+            return __('Registration Successful');
         }
 
-        return $this->event->name ?? 'Registration';
-    }
-
-    public function getSubheading(): string|Htmlable|null
-    {
-        if ($this->registration) {
-            return 'Your confirmation code: '.$this->registration->confirmation_code;
-        }
-
-        if (! $this->event->isRegistrationOpen()) {
-            return $this->getClosedSubheading();
-        }
-
-        if ($this->event->registration_closes_at !== null) {
-            return 'Registration closes '.$this->event->registration_closes_at->format('F j, Y \a\t H:i');
-        }
-
-        return null;
+        return $this->event->name ?? __('Registration');
     }
 
     protected function getClosedSubheading(): string
     {
         if ($this->event->registration_opens_at?->isFuture()) {
-            return 'Opens '.$this->event->registration_opens_at->format('F j, Y \a\t H:i');
+            return __('Opens :date', ['date' => $this->event->registration_opens_at->format('d.m.Y H:i')]);
         }
 
-        return 'Registration for this event has ended.';
+        return __('Registration for this event has ended.');
     }
 
     public function content(Schema $schema): Schema
@@ -109,11 +103,17 @@ class EventRegistration extends SimplePage
     {
         return Section::make()
             ->schema([
-                TextEntry::make('registered_at')
-                    ->label('Registered')
-                    ->state(fn () => $this->registration?->created_at?->format('F j, Y \a\t H:i'))
+                TextEntry::make('confirmation_code')
+                    ->label(__('Confirmation Code'))
+                    ->state(fn () => $this->registration?->confirmation_code)
+                    ->size('lg')
+                    ->weight('bold')
+                    ->copyable()
                     ->icon('heroicon-o-check-circle')
                     ->iconColor('success'),
+                TextEntry::make('registered_at')
+                    ->label(__('Registered'))
+                    ->state(fn () => $this->registration?->created_at?->format('d.m.Y H:i')),
             ])
             ->contained(false)
             ->visible(fn () => $this->registration !== null);
@@ -123,11 +123,11 @@ class EventRegistration extends SimplePage
     {
         return Section::make()
             ->schema([
-                IconEntry::make('status')
-                    ->label('Status')
-                    ->state('closed')
+                TextEntry::make('closed_status')
+                    ->label(__('Status'))
+                    ->state(fn () => $this->getClosedSubheading())
                     ->icon('heroicon-o-clock')
-                    ->color('warning')
+                    ->iconColor('warning')
                     ->hiddenLabel(),
             ])
             ->contained(false)
@@ -139,7 +139,7 @@ class EventRegistration extends SimplePage
         return Section::make()
             ->schema([
                 TextEntry::make('no_form')
-                    ->label('No registration form configured for this event.')
+                    ->label(__('No registration form configured for this event.'))
                     ->state('')
                     ->hiddenLabel(),
             ])
@@ -152,11 +152,12 @@ class EventRegistration extends SimplePage
         return Section::make()
             ->schema([
                 FormComponent::make($this->getFormSchema())
+                    ->statePath('data')
                     ->livewireSubmitHandler('register')
                     ->footer([
                         Actions::make([
                             Action::make('register')
-                                ->label('Register')
+                                ->label(__('Register'))
                                 ->color(Color::hex('#74B1FF'))
                                 ->submit('register'),
                         ])->fullWidth(),
@@ -169,6 +170,7 @@ class EventRegistration extends SimplePage
     public function form(Schema $schema): Schema
     {
         return $schema
+            ->components($this->getFormSchema())
             ->statePath('data');
     }
 
@@ -188,26 +190,30 @@ class EventRegistration extends SimplePage
         foreach ($fields as $field) {
             $component = match ($field->type) {
                 FormFieldType::Text => TextInput::make($field->name)
-                    ->label($field->label)
+                    ->label($field->name)
                     ->maxLength(1000),
                 FormFieldType::Email => TextInput::make($field->name)
-                    ->label($field->label)
+                    ->label($field->name)
                     ->email(),
                 FormFieldType::Number => TextInput::make($field->name)
-                    ->label($field->label)
+                    ->label($field->name)
                     ->numeric(),
                 FormFieldType::Date => DatePicker::make($field->name)
                     ->native(false)
-                    ->label($field->label),
+                    ->label($field->name)
+                    ->displayFormat('d.m.Y'),
                 FormFieldType::Boolean => Checkbox::make($field->name)
-                    ->label($field->label),
+                    ->label($field->name),
                 FormFieldType::Select => Select::make($field->name)
-                    ->label($field->label)
+                    ->label($field->name)
                     ->options(array_combine($field->options ?? [], $field->options ?? [])),
             };
 
             if ($field->is_required) {
                 $component->required();
+                if ($field->type == FormFieldType::Date) {
+                    $component->rule('date');
+                }
             }
 
             $components[] = $component;
@@ -220,7 +226,7 @@ class EventRegistration extends SimplePage
     {
         if (! $this->event->isRegistrationOpen()) {
             Notification::make()
-                ->title('Registration is not open')
+                ->title(__('Registration is not open'))
                 ->danger()
                 ->send();
 
@@ -230,24 +236,22 @@ class EventRegistration extends SimplePage
         $key = 'registration:'.request()->ip();
         if (RateLimiter::tooManyAttempts($key, 10)) {
             Notification::make()
-                ->title('Too many attempts')
-                ->body('Please try again later.')
+                ->title(__('Too many attempts'))
+                ->body(__('Please try again in an hour.'))
                 ->danger()
                 ->send();
 
             return;
         }
-        RateLimiter::hit($key, 60);
-
-        $data = $this->form->getState();
+        RateLimiter::hit($key, 3600);
 
         $this->registration = Registration::create([
             'event_id' => $this->event->id,
-            'data' => $data,
+            'data' => $this->form->getState(),
         ]);
 
         Notification::make()
-            ->title('Registration successful!')
+            ->title(__('Registration successful!'))
             ->success()
             ->send();
     }

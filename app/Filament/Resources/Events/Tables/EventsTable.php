@@ -21,17 +21,17 @@ class EventsTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('code')
-                    ->label('Code')
+                    ->label(__('Code'))
                     ->copyable()
                     ->badge(),
                 TextColumn::make('form.name')
-                    ->label('Form')
-                    ->placeholder('No form'),
+                    ->label(__('Form'))
+                    ->placeholder(__('No form')),
                 TextColumn::make('registrations_count')
                     ->counts('registrations')
-                    ->label('Registrations'),
+                    ->label(__('Registrations')),
                 IconColumn::make('is_open')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->state(fn (Event $record): bool => $record->isRegistrationOpen())
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
@@ -39,21 +39,23 @@ class EventsTable
                     ->trueColor('success')
                     ->falseColor('danger'),
                 TextColumn::make('registration_opens_at')
+                    ->label(__('Opens At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('registration_closes_at')
+                    ->label(__('Closes At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
             ])
             ->recordActions([
                 Action::make('qr_code')
-                    ->label('QR Code')
+                    ->label(__('QR Code'))
                     ->icon('heroicon-o-qr-code')
                     ->modalContent(fn (Event $record) => view('filament.events.qr-code-modal', ['event' => $record]))
                     ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Close'),
+                    ->modalCancelActionLabel(__('Close')),
                 EditAction::make(),
             ])
             ->toolbarActions([

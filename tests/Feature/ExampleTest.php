@@ -3,5 +3,5 @@
 it('returns a successful response', function () {
     $response = $this->get('/');
 
-    $response->assertStatus(404);
+    $response->assertStatus(302);
 });

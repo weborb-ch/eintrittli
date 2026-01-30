@@ -19,10 +19,10 @@ class FormsTable
                     ->sortable(),
                 TextColumn::make('fields_count')
                     ->counts('fields')
-                    ->label('Fields'),
+                    ->label(__('Fields')),
                 TextColumn::make('events_count')
                     ->counts('events')
-                    ->label('Events'),
+                    ->label(__('Events')),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

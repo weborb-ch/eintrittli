@@ -23,6 +23,16 @@ class EventResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Administration';
 
+    public static function getModelLabel(): string
+    {
+        return __('Event');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Events');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return EventForm::configure($schema);
