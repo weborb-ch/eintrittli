@@ -37,7 +37,7 @@ class UserForm
                     ]),
                 Section::make(__('Role Information'))
                     ->schema([
-                        # Non-breaking whitespace as placeholder name
+                        // Non-breaking whitespace as placeholder name
                         Placeholder::make(' ')
                             ->content(new HtmlString(self::getRoleDescriptionsHtml())),
                     ]),
