@@ -2,7 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use App\Livewire\ExtendedEditProfileForm;
 use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -65,7 +64,7 @@ class AdminPanelProvider extends PanelProvider
                     ->slug('profile')
                     ->setIcon('heroicon-o-user')
                     ->shouldShowEditProfileForm(false)
-                    ->shouldRegisterNavigation(false)
+                    ->shouldRegisterNavigation(false),
             ])
             ->userMenuItems([
                 'profile' => Action::make('profile')
