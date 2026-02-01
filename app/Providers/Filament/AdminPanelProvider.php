@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Livewire\ExtendedEditProfileForm;
+use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -17,6 +19,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
+use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -55,6 +59,23 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+            ])
+            ->plugins([
+                FilamentEditProfilePlugin::make()
+                    ->slug('profile')
+                    ->setIcon('heroicon-o-user')
+                    ->shouldShowEditProfileForm(false)
+                    ->shouldRegisterNavigation(false)
+                    ->customProfileComponents([
+                        //                        ExtendedEditProfileForm::class,
+                        \App\Forms\Components\ExtendedEditProfileForm::class,
+                    ]),
+            ])
+            ->userMenuItems([
+                'profile' => Action::make('profile')
+                    ->label(fn () => auth()->user()->username)
+                    ->url(fn (): string => EditProfilePage::getUrl())
+                    ->icon('heroicon-m-user-circle'),
             ]);
     }
 }
