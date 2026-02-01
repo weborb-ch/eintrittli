@@ -66,10 +66,6 @@ class AdminPanelProvider extends PanelProvider
                     ->setIcon('heroicon-o-user')
                     ->shouldShowEditProfileForm(false)
                     ->shouldRegisterNavigation(false)
-                    ->customProfileComponents([
-                        //                        ExtendedEditProfileForm::class,
-                        \App\Forms\Components\ExtendedEditProfileForm::class,
-                    ]),
             ])
             ->userMenuItems([
                 'profile' => Action::make('profile')
