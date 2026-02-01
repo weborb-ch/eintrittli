@@ -5,6 +5,7 @@ namespace App\Filament\Pages\Auth;
 use Filament\Auth\Pages\Login as BaseLogin;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Illuminate\Validation\ValidationException;
 
 class Login extends BaseLogin
 {
@@ -13,7 +14,7 @@ class Login extends BaseLogin
         return $schema
             ->components([
                 TextInput::make('username')
-                    ->label('Username')
+                    ->label(__('Username'))
                     ->required()
                     ->autocomplete()
                     ->autofocus(),
@@ -28,5 +29,12 @@ class Login extends BaseLogin
             'username' => $data['username'],
             'password' => $data['password'],
         ];
+    }
+
+    protected function throwFailureValidationException(): never
+    {
+        throw ValidationException::withMessages([
+            'data.username' => __('Username or password is incorrect.'),
+        ]);
     }
 }
