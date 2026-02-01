@@ -29,21 +29,25 @@ class ListRegistrations extends ListRecords
 
     public function exportCsv(): StreamedResponse
     {
+        /** @var Collection<int, Registration> $registrations */
         $registrations = $this->getFilteredTableQuery()->with('event.form.fields')->get();
 
         // Collect all form fields across all events (preserving field definitions)
+        /** @var Collection<string, FormField> $allFields */
         $allFields = $registrations
             ->flatMap(fn (Registration $r) => $r->event->form->fields ?? collect())
             ->unique('name')
             ->keyBy('name');
 
-        /** @var Collection<string, FormField> $allFields */
-
         return response()->streamDownload(function () use ($registrations, $allFields) {
             $handle = fopen('php://output', 'w');
+            if ($handle === false) {
+                return;
+            }
 
             // Header row using field names
             $fieldLabels = $allFields->map(fn (FormField $f) => $f->name)->values()->toArray();
+            /** @var list<string> $headers */
             $headers = [__('Confirmation Code'), __('Event'), __('Registered At'), ...$fieldLabels, __('Notes')];
             fputcsv($handle, $headers);
 
