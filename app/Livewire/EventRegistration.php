@@ -21,7 +21,8 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Colors\Color;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\RateLimiter;
 
 /**
@@ -33,10 +34,11 @@ class EventRegistration extends SimplePage
 
     public ?Event $event = null;
 
-    public ?Registration $registration = null;
+    /** @var Collection<int, Registration> */
+    public Collection $registrations;
 
-    /** @var array<string, mixed> */
-    public array $data = [];
+    /** @var array<int, array<string, mixed>> */
+    public array $entries = [];
 
     public function mount(string $code): void
     {
@@ -49,20 +51,9 @@ class EventRegistration extends SimplePage
 
         $this->event = Event::where('code', $code)->firstOrFail();
         $this->event->load('form.fields');
+        $this->registrations = collect();
 
-        $eventForm = $this->event->form;
-        if ($eventForm instanceof Form) {
-            /** @var Collection<int, FormField> $fields */
-            $fields = $eventForm->fields;
-
-            foreach ($fields as $field) {
-                if ($field->type == FormFieldType::Date) {
-                    $this->data[$field->name] ??= null;
-                }
-            }
-        }
-
-        $this->form->fill();
+        $this->addEntry();
     }
 
     public function getTitle(): string|Htmlable
@@ -72,7 +63,7 @@ class EventRegistration extends SimplePage
 
     public function getHeading(): string|Htmlable|null
     {
-        if ($this->registration) {
+        if ($this->registrations->isNotEmpty()) {
             return __('Registration Successful');
         }
 
@@ -101,22 +92,33 @@ class EventRegistration extends SimplePage
 
     protected function getSuccessSection(): Section
     {
+        $schema = [];
+
+        foreach ($this->registrations as $index => $registration) {
+            $label = $this->registrations->count() > 1
+                ? __('Registration :number', ['number' => $index + 1])
+                : __('Confirmation Code');
+
+            $schema[] = TextEntry::make("confirmation_code_{$index}")
+                ->label($label)
+                ->state($registration->confirmation_code)
+                ->size('lg')
+                ->weight('bold')
+                ->copyable()
+                ->icon('heroicon-o-check-circle')
+                ->iconColor('success');
+        }
+
+        if ($this->registrations->isNotEmpty()) {
+            $schema[] = TextEntry::make('registered_at')
+                ->label(__('Registered'))
+                ->state($this->registrations->first()->created_at->format('d.m.Y H:i'));
+        }
+
         return Section::make()
-            ->schema([
-                TextEntry::make('confirmation_code')
-                    ->label(__('Confirmation Code'))
-                    ->state(fn () => $this->registration?->confirmation_code)
-                    ->size('lg')
-                    ->weight('bold')
-                    ->copyable()
-                    ->icon('heroicon-o-check-circle')
-                    ->iconColor('success'),
-                TextEntry::make('registered_at')
-                    ->label(__('Registered'))
-                    ->state(fn () => $this->registration?->created_at?->format('d.m.Y H:i')),
-            ])
+            ->schema($schema)
             ->contained(false)
-            ->visible(fn () => $this->registration !== null);
+            ->visible(fn () => $this->registrations->isNotEmpty());
     }
 
     protected function getClosedSection(): Section
@@ -131,7 +133,7 @@ class EventRegistration extends SimplePage
                     ->hiddenLabel(),
             ])
             ->contained(false)
-            ->visible(fn () => $this->registration === null && ! $this->event->isRegistrationOpen());
+            ->visible(fn () => $this->registrations->isEmpty() && ! $this->event->isRegistrationOpen());
     }
 
     protected function getNoFormSection(): Section
@@ -144,38 +146,64 @@ class EventRegistration extends SimplePage
                     ->hiddenLabel(),
             ])
             ->contained(false)
-            ->visible(fn () => $this->registration === null && $this->event->isRegistrationOpen() && $this->event->form === null);
+            ->visible(fn () => $this->registrations->isEmpty() && $this->event->isRegistrationOpen() && $this->event->form === null);
     }
 
     protected function getRegistrationFormSection(): Section
     {
         return Section::make()
-            ->schema([
-                FormComponent::make($this->getFormSchema())
-                    ->statePath('data')
-                    ->livewireSubmitHandler('register')
-                    ->footer([
-                        Actions::make([
-                            Action::make('register')
-                                ->label(__('Register'))
-                                ->color(Color::hex('#74B1FF'))
-                                ->submit('register'),
-                        ])->fullWidth(),
-                    ]),
-            ])
+            ->schema($this->getMultiEntryFormSchema())
             ->contained(false)
-            ->visible(fn () => $this->registration === null && $this->event->isRegistrationOpen() && $this->event->form !== null);
-    }
-
-    public function form(Schema $schema): Schema
-    {
-        return $schema
-            ->components($this->getFormSchema())
-            ->statePath('data');
+            ->visible(fn () => $this->registrations->isEmpty() && $this->event->isRegistrationOpen() && $this->event->form !== null);
     }
 
     /** @return array<int, \Filament\Schemas\Components\Component> */
-    protected function getFormSchema(): array
+    protected function getMultiEntryFormSchema(): array
+    {
+        $sections = [];
+
+        foreach ($this->entries as $index => $entry) {
+            $sections[] = Section::make(count($this->entries) > 1 ? __('Registration :number', ['number' => $index + 1]) : null)
+                ->schema($this->getFieldsForEntry($index))
+                ->headerActions(
+                    count($this->entries) > 1
+                        ? [
+                            Action::make("remove_{$index}")
+                                ->label(__('Remove'))
+                                ->icon('heroicon-o-trash')
+                                ->color('danger')
+                                ->size('sm')
+                                ->action(fn () => $this->removeEntry($index)),
+                        ]
+                        : []
+                )
+                ->collapsible(count($this->entries) > 1);
+        }
+
+        $sections[] = Actions::make([
+            Action::make('add_entry')
+                ->label(__('Add another registration'))
+                ->icon('heroicon-o-plus')
+                ->color('gray')
+                ->action(fn () => $this->addEntry()),
+        ]);
+
+        $sections[] = FormComponent::make([])
+            ->livewireSubmitHandler('register')
+            ->footer([
+                Actions::make([
+                    Action::make('register')
+                        ->label(count($this->entries) > 1 ? __('Register all') : __('Register'))
+                        ->color(Color::hex('#74B1FF'))
+                        ->submit('register'),
+                ])->fullWidth(),
+            ]);
+
+        return $sections;
+    }
+
+    /** @return array<int, \Filament\Schemas\Components\Component> */
+    protected function getFieldsForEntry(int $index): array
     {
         $components = [];
 
@@ -184,34 +212,34 @@ class EventRegistration extends SimplePage
             return $components;
         }
 
-        /** @var Collection<int, FormField> $fields */
+        /** @var EloquentCollection<int, FormField> $fields */
         $fields = $eventForm->fields;
 
         foreach ($fields as $field) {
             $component = match ($field->type) {
-                FormFieldType::Text => TextInput::make($field->name)
+                FormFieldType::Text => TextInput::make("entries.{$index}.{$field->name}")
                     ->label($field->name)
                     ->maxLength(1000),
-                FormFieldType::Email => TextInput::make($field->name)
+                FormFieldType::Email => TextInput::make("entries.{$index}.{$field->name}")
                     ->label($field->name)
                     ->email(),
-                FormFieldType::Number => TextInput::make($field->name)
+                FormFieldType::Number => TextInput::make("entries.{$index}.{$field->name}")
                     ->label($field->name)
                     ->numeric(),
-                FormFieldType::Date => DatePicker::make($field->name)
+                FormFieldType::Date => DatePicker::make("entries.{$index}.{$field->name}")
                     ->native(false)
                     ->label($field->name)
                     ->displayFormat('d.m.Y'),
-                FormFieldType::Boolean => Checkbox::make($field->name)
+                FormFieldType::Boolean => Checkbox::make("entries.{$index}.{$field->name}")
                     ->label($field->name),
-                FormFieldType::Select => Select::make($field->name)
+                FormFieldType::Select => Select::make("entries.{$index}.{$field->name}")
                     ->label($field->name)
                     ->options(array_combine($field->options ?? [], $field->options ?? [])),
             };
 
             if ($field->is_required) {
                 $component->required();
-                if ($field->type == FormFieldType::Date) {
+                if ($field->type === FormFieldType::Date) {
                     $component->rule('date');
                 }
             }
@@ -220,6 +248,17 @@ class EventRegistration extends SimplePage
         }
 
         return $components;
+    }
+
+    public function addEntry(): void
+    {
+        $this->entries[] = [];
+    }
+
+    public function removeEntry(int $index): void
+    {
+        unset($this->entries[$index]);
+        $this->entries = array_values($this->entries);
     }
 
     public function register(): void
@@ -234,7 +273,8 @@ class EventRegistration extends SimplePage
         }
 
         $key = 'registration:'.request()->ip();
-        if (RateLimiter::tooManyAttempts($key, 10)) {
+        $allowedAttempts = max(10, count($this->entries));
+        if (RateLimiter::tooManyAttempts($key, $allowedAttempts)) {
             Notification::make()
                 ->title(__('Too many attempts'))
                 ->body(__('Please try again in an hour.'))
@@ -243,15 +283,28 @@ class EventRegistration extends SimplePage
 
             return;
         }
-        RateLimiter::hit($key, 3600);
 
-        $this->registration = Registration::create([
-            'event_id' => $this->event->id,
-            'data' => $this->form->getState(),
-        ]);
+        $createdRegistrations = collect();
+
+        foreach ($this->entries as $entryData) {
+            RateLimiter::hit($key, 3600);
+
+            $registration = Registration::create([
+                'event_id' => $this->event->id,
+                'data' => $entryData,
+            ]);
+
+            $createdRegistrations->push($registration);
+        }
+
+        $this->registrations = $createdRegistrations;
+
+        $message = $createdRegistrations->count() > 1
+            ? __(':count registrations successful!', ['count' => $createdRegistrations->count()])
+            : __('Registration successful!');
 
         Notification::make()
-            ->title(__('Registration successful!'))
+            ->title($message)
             ->success()
             ->send();
     }
