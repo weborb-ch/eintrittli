@@ -14,6 +14,11 @@
     "Please try again in an hour.": "Bitte versuche es in einer Stunde erneut.",
     "Too many requests. Please try again later.": "Zu viele Anfragen. Bitte versuche es später erneut.",
     "Registration successful!": "Anmeldung erfolgreich!",
+    ":count registrations successful!": ":count Anmeldungen erfolgreich!",
+    "Registration :number": "Anmeldung :number",
+    "Add another registration": "Weitere Anmeldung hinzufügen",
+    "Register all": "Alle anmelden",
+    "Remove": "Entfernen",
 
     "Text": "Text",
     "Number": "Zahl",
