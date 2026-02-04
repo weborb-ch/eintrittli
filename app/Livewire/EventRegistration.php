@@ -92,29 +92,32 @@ class EventRegistration extends SimplePage
 
     protected function getSuccessSection(): Section
     {
-        $schema = [];
-
-        foreach ($this->registrations as $index => $registration) {
-            $schema[] = TextEntry::make("confirmation_code_{$index}")
-                ->label(__('Registration :number', ['number' => $index + 1]))
-                ->state($registration->confirmation_code)
-                ->size('lg')
-                ->weight('bold')
-                ->copyable()
-                ->icon('heroicon-o-check-circle')
-                ->iconColor('success');
-        }
-
-        if ($this->registrations->isNotEmpty()) {
-            $schema[] = TextEntry::make('registered_at')
-                ->label(__('Registered'))
-                ->state($this->registrations->first()->created_at->format('d.m.Y H:i'));
-        }
-
         return Section::make()
-            ->schema($schema)
+            ->schema(function (): array {
+                $schema = [];
+
+                foreach ($this->registrations as $index => $registration) {
+                    $schema[] = TextEntry::make("confirmation_code_{$index}")
+                        ->label(__('Registration :number', ['number' => $index + 1]))
+                        ->state($registration->confirmation_code)
+                        ->size('lg')
+                        ->weight('bold')
+                        ->copyable()
+                        ->icon('heroicon-o-check-circle')
+                        ->iconColor('success');
+                }
+
+                if ($this->registrations->isNotEmpty()) {
+                    $schema[] = TextEntry::make('registered_at')
+                        ->label(__('Registered'))
+                        ->state($this->registrations->first()->created_at->format('d.m.Y H:i'));
+                }
+
+                return $schema;
+            })
             ->contained(false)
-            ->visible(fn () => $this->registrations->isNotEmpty());
+            ->visible(fn () => $this->registrations->isNotEmpty())
+            ->key('success-section');
     }
 
     protected function getClosedSection(): Section
@@ -245,9 +248,6 @@ class EventRegistration extends SimplePage
 
             if ($field->is_required) {
                 $component->required();
-                if ($field->type === FormFieldType::Date) {
-                    $component->rule('date');
-                }
             }
 
             $components[] = $component;
