@@ -24,6 +24,7 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * @property-read Schema $form
@@ -160,13 +161,13 @@ class EventRegistration extends SimplePage
     /** @return array<int, \Filament\Schemas\Components\Component> */
     protected function getMultiEntryFormSchema(): array
     {
-        $sections = [];
+        $entrySections = [];
         $entryKeys = array_keys($this->entries);
         $entryCount = count($entryKeys);
 
         foreach ($entryKeys as $displayIndex => $entryKey) {
             $capturedKey = $entryKey;
-            $sections[] = Section::make(__('Registration :number', ['number' => $displayIndex + 1]))
+            $entrySections[] = Section::make(__('Registration :number', ['number' => $displayIndex + 1]))
                 ->schema($this->getFieldsForEntry($entryKey))
                 ->headerActions(
                     $entryCount > 1
@@ -186,29 +187,28 @@ class EventRegistration extends SimplePage
                 ->key("entry-section-{$entryKey}");
         }
 
-        $sections[] = Actions::make([
-            Action::make('add_entry')
-                ->label(__('Add another registration'))
-                ->icon('heroicon-o-plus')
-                ->color('gray')
-                ->action(function () {
-                    $this->addEntry();
-                }),
-        ])->key('add-entry-actions');
-
-        $sections[] = FormComponent::make([])
-            ->livewireSubmitHandler('register')
-            ->footer([
-                Actions::make([
-                    Action::make('register')
-                        ->label(__('Register all'))
-                        ->color(Color::hex('#74B1FF'))
-                        ->submit('register'),
-                ])->fullWidth(),
-            ])
-            ->key('register-form');
-
-        return $sections;
+        return [
+            FormComponent::make($entrySections)
+                ->livewireSubmitHandler('register')
+                ->footer([
+                    Actions::make([
+                        Action::make('add_entry')
+                            ->label(__('Add another registration'))
+                            ->icon('heroicon-o-plus')
+                            ->color('gray')
+                            ->action(function () {
+                                $this->addEntry();
+                            }),
+                    ]),
+                    Actions::make([
+                        Action::make('register')
+                            ->label(__('Register all'))
+                            ->color(Color::hex('#74B1FF'))
+                            ->submit('register'),
+                    ])->fullWidth(),
+                ])
+                ->key('register-form'),
+        ];
     }
 
     /** @return array<int, \Filament\Schemas\Components\Component> */
@@ -283,6 +283,57 @@ class EventRegistration extends SimplePage
         unset($this->entries[$key]);
     }
 
+    protected function validateEntries(): void
+    {
+        $eventForm = $this->event->form;
+        if (! $eventForm instanceof Form) {
+            return;
+        }
+
+        /** @var EloquentCollection<int, FormField> $fields */
+        $fields = $eventForm->fields;
+
+        $rules = [];
+        $attributes = [];
+
+        foreach (array_keys($this->entries) as $entryKey) {
+            foreach ($fields as $field) {
+                $path = "entries.{$entryKey}.{$field->name}";
+
+                $fieldRules = [];
+                if ($field->is_required && $field->type !== FormFieldType::Boolean) {
+                    $fieldRules[] = 'required';
+                } else {
+                    $fieldRules[] = 'nullable';
+                }
+
+                $fieldRules[] = match ($field->type) {
+                    FormFieldType::Email => 'email',
+                    FormFieldType::Number => 'numeric',
+                    FormFieldType::Date => 'date',
+                    FormFieldType::Text, FormFieldType::Select => 'string',
+                    FormFieldType::Boolean => 'boolean',
+                };
+
+                if ($field->type === FormFieldType::Text) {
+                    $fieldRules[] = 'max:1000';
+                }
+
+                $rules[$path] = $fieldRules;
+                $attributes[$path] = $field->name;
+            }
+        }
+
+        $validator = Validator::make(
+            ['entries' => $this->entries],
+            $rules,
+            [],
+            $attributes
+        );
+
+        $validator->validate();
+    }
+
     public function register(): void
     {
         if (! $this->event->isRegistrationOpen()) {
@@ -293,6 +344,8 @@ class EventRegistration extends SimplePage
 
             return;
         }
+
+        $this->validateEntries();
 
         $key = 'registration:'.request()->ip();
         $allowedAttempts = max(10, count($this->entries));
