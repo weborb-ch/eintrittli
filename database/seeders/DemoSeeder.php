@@ -25,13 +25,13 @@ class DemoSeeder extends Seeder
     {
         User::create([
             'username' => 'admin',
-            'password' => 'password',
+            'password' => 'admin',
             'role' => UserRole::Admin,
         ]);
 
         User::create([
-            'username' => 'member',
-            'password' => 'password',
+            'username' => 'mitglied',
+            'password' => 'mitglied',
             'role' => UserRole::Member,
         ]);
     }

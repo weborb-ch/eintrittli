@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use Filament\Actions\Action;
+use Filament\View\PanelsRenderHook;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -12,6 +13,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
+use Illuminate\Contracts\View\View;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -71,6 +73,12 @@ class AdminPanelProvider extends PanelProvider
                     ->label(fn () => auth()->user()->username)
                     ->url(fn (): string => EditProfilePage::getUrl())
                     ->icon('heroicon-m-user-circle'),
-            ]);
+            ])
+            ->renderHook(
+                PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
+                fn (): ?View => env('IS_DEMO', false)
+                    ? view('filament.pages.auth.demo-hint')
+                    : null,
+            );
     }
 }
