@@ -1,14 +1,18 @@
-FROM php:8.5-cli-alpine
+FROM php:8.5-apache
 
-RUN apk add --no-cache \
-    postgresql-dev \
-    libzip-dev \
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
     zip \
     unzip \
-    nodejs \
-    npm
+    libzip-dev \
+    libicu-dev \
+    libpq-dev
 
-RUN docker-php-ext-install pdo pdo_pgsql zip opcache
+RUN docker-php-ext-install pdo_pgsql pgsql mbstring zip intl
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
