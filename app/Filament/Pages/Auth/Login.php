@@ -9,6 +9,11 @@ use Illuminate\Validation\ValidationException;
 
 class Login extends BaseLogin
 {
+    public function getHeading(): string
+    {
+        return __('Login yourself');
+    }
+
     public function form(Schema $schema): Schema
     {
         return $schema
