@@ -265,7 +265,7 @@ class DemoSeeder extends Seeder
             Registration::create([
                 'event_id' => $event->id,
                 'data' => $data,
-                'notes' => fake()->optional(0.3)->sentence(),
+                'notes' => \fake()->optional(0.3)->sentence(),
             ]);
         }
     }
