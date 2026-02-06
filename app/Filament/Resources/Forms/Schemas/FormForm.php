@@ -31,6 +31,7 @@ class FormForm
                     ->maxLength(255)
                     ->disabled(fn (?Form $record) => $record?->isInUse() ?? false),
                 Textarea::make('description')
+                    ->label(__('Description'))
                     ->rows(3)
                     ->columnSpanFull()
                     ->disabled(fn (?Form $record) => $record?->isInUse() ?? false),
