@@ -6,4 +6,7 @@
         <p><strong>Admin:</strong> admin / admin</p>
         <p><strong>Mitglied:</strong> mitglied / mitglied</p>
     </div>
+    <p class="mt-2 text-xs text-gray-500 dark:text-gray-500">
+        Diese Instanz wird wöchentlich zurückgesetzt.
+    </p>
 </div>

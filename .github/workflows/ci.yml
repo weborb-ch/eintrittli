@@ -6,6 +6,8 @@ on:
     tags: ['v*']
   pull_request:
     branches: [main]
+  schedule:
+    - cron: '0 3 * * 0'  # Every Sunday at 03:00 UTC
 
 jobs:
   lint:
@@ -119,4 +121,13 @@ jobs:
     steps:
       - name: Deploy to Laravel Cloud
         run: |
-          curl -X POST "${{ secrets.LARAVEL_CLOUD_DEPLOY_HOOK }}
+          curl -X POST "${{ secrets.LARAVEL_CLOUD_DEPLOY_HOOK }}"
+
+  demo-reset:
+    name: Weekly Demo Reset
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Trigger demo reset
+        run: |
+          curl -X POST "${{ secrets.LARAVEL_CLOUD_DEPLOY_HOOK }}"
