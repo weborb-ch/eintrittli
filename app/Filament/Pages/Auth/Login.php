@@ -39,7 +39,7 @@ class Login extends BaseLogin
     protected function throwFailureValidationException(): never
     {
         throw ValidationException::withMessages([
-            'data.username' => __('Username or password is incorrect.'),
+            'data.username' => __('auth.failed'),
         ]);
     }
 }
