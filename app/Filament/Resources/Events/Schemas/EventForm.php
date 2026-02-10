@@ -29,10 +29,12 @@ class EventForm
                     ->schema([
                         DateTimePicker::make('registration_opens_at')
                             ->label(__('Opens at'))
-                            ->native(false),
+                            ->native(false)
+                            ->before('registration_closes_at'),
                         DateTimePicker::make('registration_closes_at')
                             ->label(__('Closes at'))
-                            ->native(false),
+                            ->native(false)
+                            ->after('registration_opens_at'),
                     ])
                     ->columnSpanFull()
                     ->columns(2),
