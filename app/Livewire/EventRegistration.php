@@ -22,10 +22,10 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Colors\Color;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Support\HtmlString;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 /**
