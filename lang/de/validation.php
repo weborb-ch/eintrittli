@@ -102,7 +102,7 @@ return [
         'numeric' => 'Das Feld :attribute darf nicht grösser als :max sein.',
         'string' => 'Das Feld :attribute darf nicht mehr als :max Zeichen enthalten.',
     ],
-    'max_digits' => 'Das Feld :attribute darf nicht mehr als :max Ziffern enthalten.' ,
+    'max_digits' => 'Das Feld :attribute darf nicht mehr als :max Ziffern enthalten.',
     'mimes' => 'Das Feld :attribute muss eine Datei vom Typ :values sein.',
     'mimetypes' => 'Das Feld :attribute muss eine Datei vom Typ :values sein.',
     'min' => [
@@ -152,7 +152,7 @@ return [
     'required_without_all' => 'Das Feld :attribute ist erforderlich, wenn keines der :values vorhanden ist.',
     'same' => 'Das Feld :attribute muss mit :other übereinstimmen.',
     'size' => [
-        'array' => 'Das Feld :attribute muss :size Elemente enthalten.' ,
+        'array' => 'Das Feld :attribute muss :size Elemente enthalten.',
         'file' => 'Das Feld :attribute muss :size Kilobyte gross sein.',
         'numeric' => 'Das Feld :attribute muss :size sein.',
         'string' => 'Das Feld :attribute muss :size Zeichen lang sein.',

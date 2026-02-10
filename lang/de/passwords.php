@@ -17,6 +17,6 @@ return [
     'sent' => 'Wir haben dein Passwort zurücksetzen Link per E-Mail gesendet.',
     'throttled' => 'Bitte warte vor dem erneuten Versuch.',
     'token' => 'Dieser Code zur Passwortzurücksetzung ist ungültig.',
-    'user' => "Wir können keinen Benutzer mit dieser E-Mail-Adresse finden.",
+    'user' => 'Wir können keinen Benutzer mit dieser E-Mail-Adresse finden.',
 
 ];
