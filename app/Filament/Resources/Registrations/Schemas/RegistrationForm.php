@@ -26,7 +26,7 @@ class RegistrationForm
                     ->label(__('Event'))
                     ->content(fn (Registration $record) => $record->event->name ?? '-'),
                 Placeholder::make('confirmation_code')
-                    ->label(__('Confirmation Code'))
+                    ->label(__('Confirmation code'))
                     ->content(fn (Registration $record) => $record->confirmation_code),
                 Section::make(__('Registration Data'))
                     ->schema(fn (Registration $record) => self::getDataFields($record))

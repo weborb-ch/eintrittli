@@ -48,7 +48,7 @@ class ListRegistrations extends ListRecords
             // Header row using field names
             $fieldLabels = $allFields->map(fn (FormField $f) => $f->name)->values()->toArray();
             /** @var list<string> $headers */
-            $headers = [__('Confirmation Code'), __('Event'), __('Registered At'), ...$fieldLabels, __('Notes')];
+            $headers = [__('Confirmation code'), __('Event'), __('Registered At'), ...$fieldLabels, __('Notes')];
             fputcsv($handle, $headers);
 
             foreach ($registrations as $registration) {
