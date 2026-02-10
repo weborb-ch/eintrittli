@@ -80,6 +80,10 @@ class RegistrationForm
                 }
             }
 
+            if ($field->type === FormFieldType::Boolean && $field->must_be_true) {
+                $component->accepted();
+            }
+
             $components[] = $component;
         }
 

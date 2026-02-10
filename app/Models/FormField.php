@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property FormFieldType $type
  * @property array<int, string>|null $options
  * @property bool $is_required
+ * @property bool $must_be_true
  * @property string $name
  * @property int $sort_order
  */
@@ -21,6 +22,7 @@ class FormField extends Model
         'name',
         'options',
         'is_required',
+        'must_be_true',
         'sort_order',
     ];
 
@@ -30,6 +32,7 @@ class FormField extends Model
             'type' => FormFieldType::class,
             'options' => 'array',
             'is_required' => 'boolean',
+            'must_be_true' => 'boolean',
         ];
     }
 

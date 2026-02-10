@@ -272,7 +272,7 @@ class EventRegistration extends SimplePage
                     FormFieldType::Number => 'numeric',
                     FormFieldType::Date => 'date',
                     FormFieldType::Text, FormFieldType::Select => 'string',
-                    FormFieldType::Boolean => 'boolean',
+                    FormFieldType::Boolean => $field->must_be_true ? 'accepted' : 'boolean',
                 };
 
                 if ($field->type === FormFieldType::Text) {
