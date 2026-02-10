@@ -10,6 +10,7 @@ use App\Models\FormField;
 use App\Models\Registration;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class DemoSeeder extends Seeder
 {
@@ -261,10 +262,23 @@ class DemoSeeder extends Seeder
             ],
         ];
 
-        foreach ($registrations as $data) {
+        // Anna & Max registered together (shared token)
+        $groupId1 = Str::uuid()->toString();
+        foreach (array_slice($registrations, 0, 2) as $data) {
             Registration::create([
                 'event_id' => $event->id,
                 'data' => $data,
+                'registration_group_id' => $groupId1,
+                'notes' => null,
+            ]);
+        }
+
+        // Remaining registrations each have their own registration_group_id
+        foreach (array_slice($registrations, 2) as $data) {
+            Registration::create([
+                'event_id' => $event->id,
+                'data' => $data,
+                'registration_group_id' => Str::uuid()->toString(),
                 'notes' => null,
             ]);
         }
@@ -293,12 +307,22 @@ class DemoSeeder extends Seeder
             ],
         ];
 
-        foreach ($registrations as $data) {
+        // Peter & Julia registered together
+        $groupId = Str::uuid()->toString();
+        foreach (array_slice($registrations, 0, 2) as $data) {
             Registration::create([
                 'event_id' => $event->id,
                 'data' => $data,
+                'registration_group_id' => $groupId,
             ]);
         }
+
+        // Michael registered alone
+        Registration::create([
+            'event_id' => $event->id,
+            'data' => $registrations[2],
+            'registration_group_id' => Str::uuid()->toString(),
+        ]);
     }
 
     private function seedMarathonRegistrations(Event $event): void
@@ -318,6 +342,8 @@ class DemoSeeder extends Seeder
             ['name' => 'Sandra Lehmann', 'email' => 'sandra.lehmann@example.com', 'birth' => '1998-10-03', 'category' => 'Erwachsene'],
         ];
 
+        // Group first two as a pair, rest individually
+        $pairGroupId = Str::uuid()->toString();
         foreach ($participants as $index => $p) {
             Registration::create([
                 'event_id' => $event->id,
@@ -329,6 +355,7 @@ class DemoSeeder extends Seeder
                     'Startnummer (falls vorhanden)' => $index < 5 ? 100 + $index : null,
                     'Haftungsausschluss akzeptiert' => true,
                 ],
+                'registration_group_id' => $index < 2 ? $pairGroupId : Str::uuid()->toString(),
             ]);
         }
     }
@@ -358,10 +385,12 @@ class DemoSeeder extends Seeder
             ],
         ];
 
+        $groupId = Str::uuid()->toString();
         foreach ($registrations as $data) {
             Registration::create([
                 'event_id' => $event->id,
                 'data' => $data,
+                'registration_group_id' => $groupId,
             ]);
         }
     }
@@ -378,6 +407,7 @@ class DemoSeeder extends Seeder
             Registration::create([
                 'event_id' => $event->id,
                 'data' => $data,
+                'registration_group_id' => Str::uuid()->toString(),
             ]);
         }
     }
