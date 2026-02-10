@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
  * @property int $event_id
  * @property array<string, mixed> $data
  * @property string $confirmation_code
+ * @property string $registration_group_id
  * @property string|null $notes
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
@@ -22,6 +23,7 @@ class Registration extends Model
         'event_id',
         'data',
         'confirmation_code',
+        'registration_group_id',
         'notes',
     ];
 
