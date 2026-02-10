@@ -1,12 +1,4 @@
 {
-
-
-
-
-
-
-
-
     ":count registrations successful!": ":count Anmeldungen erfolgreich!",
     "Add another registration": "Weitere Anmeldung hinzufügen",
     "Add option": "Option hinzufügen",
@@ -17,8 +9,6 @@
     "Closes At": "Schliesst am",
     "Code": "Code",
     "Confirmation code": "Bestätigungscode",
-    "Confirmation Code": "Bestätigungscode",
-    "confirmation_code": "Bestätigungscode",
     "Copied!": "Kopiert!",
     "Copy Link": "Link kopieren",
     "Created": "Erstellt",
@@ -39,6 +29,7 @@
     "Label": "Bezeichnung",
     "Login yourself": "Melde dich an.",
     "Member": "Mitglied",
+    "Must be accepted?": "Muss akzeptiert werden?",
     "Name": "Name",
     "No form": "Kein Formular",
     "No registration form configured for this event.": "Kein Anmeldeformular für diesen Anlass konfiguriert.",

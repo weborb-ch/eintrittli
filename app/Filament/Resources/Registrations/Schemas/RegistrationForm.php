@@ -26,7 +26,7 @@ class RegistrationForm
                     ->label(__('Event'))
                     ->content(fn (Registration $record) => $record->event->name ?? '-'),
                 Placeholder::make('confirmation_code')
-                    ->label(__('Confirmation Code'))
+                    ->label(__('Confirmation code'))
                     ->content(fn (Registration $record) => $record->confirmation_code),
                 Section::make(__('Registration Data'))
                     ->schema(fn (Registration $record) => self::getDataFields($record))
@@ -78,6 +78,10 @@ class RegistrationForm
                 if ($field->type == FormFieldType::Date) {
                     $component->rule('date');
                 }
+            }
+
+            if ($field->type === FormFieldType::Boolean && $field->must_be_true) {
+                $component->accepted();
             }
 
             $components[] = $component;

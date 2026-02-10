@@ -57,6 +57,9 @@ class FormForm
                         Toggle::make('is_required')
                             ->label(__('Is required'))
                             ->default(true),
+                        Toggle::make('must_be_true')
+                            ->label(__('Must be accepted?'))
+                            ->visible(fn ($get) => $get('type') === FormFieldType::Boolean->value),
                     ])
                     ->columns(2)
                     ->columnSpanFull()
