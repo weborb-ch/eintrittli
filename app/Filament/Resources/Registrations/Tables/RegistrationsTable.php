@@ -33,15 +33,15 @@ class RegistrationsTable
                         if ($html === null) {
                             return null;
                         }
-                        
+
                         $plainText = strip_tags($html->toHtml());
                         $maxLength = 60;
-                        
+
                         if (mb_strlen($plainText) <= $maxLength) {
                             return $html;
                         }
-                        
-                        return new HtmlString(mb_substr($plainText, 0, $maxLength) . '...');
+
+                        return new HtmlString(mb_substr($plainText, 0, $maxLength).'...');
                     }),
                 TextColumn::make('event.name')
                     ->sortable()
@@ -88,7 +88,7 @@ class RegistrationsTable
 
     private static function formatFormData(Registration $record): ?HtmlString
     {
-        $fields = $record->event?->form?->fields;
+        $fields = $record->event->form?->fields;
         $data = $record->data ?? [];
 
         if (! $fields || $fields->isEmpty() || empty($data)) {
@@ -110,7 +110,7 @@ class RegistrationsTable
                 default => e((string) $value),
             };
 
-            $parts[] = '<span class="text-gray-500 dark:text-gray-400">' . e($field->name) . ':</span> ' . $formatted;
+            $parts[] = '<span class="text-gray-500 dark:text-gray-400">'.e($field->name).':</span> '.$formatted;
         }
 
         if (empty($parts)) {
