@@ -35,8 +35,22 @@ class RegistrationsTable
                 SelectFilter::make('event')
                     ->label(__('Event'))
                     ->relationship('event', 'name')
+                    ->multiple()
                     ->preload()
                     ->searchable(),
+                SelectFilter::make('form')
+                    ->label(__('Form'))
+                    ->options(fn () => \App\Models\Form::pluck('name', 'id'))
+                    ->multiple()
+                    ->preload()
+                    ->searchable()
+                    ->query(fn (Builder $query, array $data) => $query->when(
+                        $data['values'],
+                        fn (Builder $q, array $formIds) => $q->whereHas(
+                            'event',
+                            fn (Builder $eq) => $eq->whereIn('form_id', $formIds),
+                        ),
+                    )),
             ])
             ->recordActions([
                 EditAction::make(),
