@@ -9,7 +9,9 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -61,7 +63,7 @@ class RegistrationsTable
                     ->searchable(),
                 SelectFilter::make('form')
                     ->label(__('Form'))
-                    ->options(fn () => \App\Models\Form::pluck('name', 'id'))
+                    ->options(fn () => \App\Models\Form::orderBy('name')->pluck('name', 'id'))
                     ->multiple()
                     ->preload()
                     ->searchable()
@@ -71,6 +73,28 @@ class RegistrationsTable
                             'event',
                             fn (Builder $eq) => $eq->whereIn('form_id', $formIds),
                         ),
+                    )),
+                Filter::make('registered_from')
+                    ->label(__('Registered from'))
+                    ->form([
+                        DatePicker::make('registered_from')
+                            ->native(false)
+                            ->label(__('Registered from')),
+                    ])
+                    ->query(fn (Builder $query, array $data) => $query->when(
+                        $data['registered_from'],
+                        fn (Builder $q, string $date) => $q->whereDate('created_at', '>=', $date),
+                    )),
+                Filter::make('registered_until')
+                    ->label(__('Registered until'))
+                    ->form([
+                        DatePicker::make('registered_until')
+                            ->native(false)
+                            ->label(__('Registered until')),
+                    ])
+                    ->query(fn (Builder $query, array $data) => $query->when(
+                        $data['registered_until'],
+                        fn (Builder $q, string $date) => $q->whereDate('created_at', '<=', $date),
                     )),
             ])
             ->recordActions([
