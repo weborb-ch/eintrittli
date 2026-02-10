@@ -35,6 +35,7 @@ class CreateForm extends CreateRecord
                 'type' => $field->type->value,
                 'name' => $field->name,
                 'options' => $field->options,
+                'content' => $field->content,
                 'is_required' => $field->is_required,
                 'must_be_true' => $field->must_be_true,
             ])->toArray(),

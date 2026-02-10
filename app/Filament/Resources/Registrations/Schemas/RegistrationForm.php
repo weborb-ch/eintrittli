@@ -51,6 +51,10 @@ class RegistrationForm
         }
 
         foreach ($formFields as $field) {
+            if ($field->type === FormFieldType::Description) {
+                continue;
+            }
+
             $component = match ($field->type) {
                 FormFieldType::Text => TextInput::make("data.{$field->name}")
                     ->label($field->name)
