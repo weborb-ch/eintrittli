@@ -2,9 +2,13 @@
 
 namespace App\Filament\Resources\Forms\Tables;
 
+use App\Filament\Resources\Forms\FormResource;
+use App\Models\Form;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -32,6 +36,12 @@ class FormsTable
                 //
             ])
             ->recordActions([
+                Action::make('duplicate')
+                    ->label(__('Duplicate'))
+                    ->icon(Heroicon::OutlinedDocumentDuplicate)
+                    ->url(fn (Form $record) => FormResource::getUrl('create', [
+                        'duplicate' => $record->getKey(),
+                    ])),
                 EditAction::make(),
             ])
             ->toolbarActions([

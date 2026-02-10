@@ -3,11 +3,42 @@
 namespace App\Filament\Resources\Forms\Pages;
 
 use App\Filament\Resources\Forms\FormResource;
+use App\Models\Form;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateForm extends CreateRecord
 {
     protected static string $resource = FormResource::class;
+
+    protected function fillForm(): void
+    {
+        $duplicateId = request()->integer('duplicate') ?: null;
+
+        if (! $duplicateId) {
+            parent::fillForm();
+
+            return;
+        }
+
+        $form = Form::with('fields')->find($duplicateId);
+
+        if (! $form) {
+            parent::fillForm();
+
+            return;
+        }
+
+        $this->form->fill([
+            'name' => $form->name.' ('.__('Copy').')',
+            'description' => $form->description,
+            'fields' => $form->fields->map(fn ($field) => [
+                'type' => $field->type->value,
+                'name' => $field->name,
+                'options' => $field->options,
+                'is_required' => $field->is_required,
+            ])->toArray(),
+        ]);
+    }
 
     protected function getRedirectUrl(): string
     {
