@@ -33,6 +33,7 @@ class RegistrationsTable
             ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('event')
+                    ->label(__('Event'))
                     ->relationship('event', 'name')
                     ->preload()
                     ->searchable(),
