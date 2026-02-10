@@ -336,7 +336,7 @@ class EventRegistration extends SimplePage
 
         $this->redirect(route('registration.success', [
             'code' => $this->event->code,
-            'registration_group_id' => $registrationGroupId,
+            'registrationGroupId' => $registrationGroupId,
         ]));
     }
 
