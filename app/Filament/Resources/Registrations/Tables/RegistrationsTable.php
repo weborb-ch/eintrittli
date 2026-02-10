@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\Registrations\Tables;
 
+use App\Enums\FormFieldType;
+use App\Models\Registration;
+use Carbon\Carbon;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -9,6 +12,8 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 
 class RegistrationsTable
 {
@@ -16,12 +21,28 @@ class RegistrationsTable
     {
         return $table
             ->poll('5s')
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('event.form.fields'))
             ->columns([
                 TextColumn::make('confirmation_code')
                     ->searchable()
                     ->copyable()
                     ->label(__('Confirmation code'))
-                    ->fontFamily('mono'),
+                    ->fontFamily('mono')
+                    ->description(function (Registration $record): ?HtmlString {
+                        $html = self::formatFormData($record);
+                        if ($html === null) {
+                            return null;
+                        }
+                        
+                        $plainText = strip_tags($html->toHtml());
+                        $maxLength = 60;
+                        
+                        if (mb_strlen($plainText) <= $maxLength) {
+                            return $html;
+                        }
+                        
+                        return new HtmlString(mb_substr($plainText, 0, $maxLength) . '...');
+                    }),
                 TextColumn::make('event.name')
                     ->sortable()
                     ->searchable(),
@@ -63,5 +84,48 @@ class RegistrationsTable
                         ->requiresConfirmation(),
                 ]),
             ]);
+    }
+
+    private static function formatFormData(Registration $record): ?HtmlString
+    {
+        $fields = $record->event?->form?->fields;
+        $data = $record->data ?? [];
+
+        if (! $fields || $fields->isEmpty() || empty($data)) {
+            return null;
+        }
+
+        $parts = [];
+
+        foreach ($fields as $field) {
+            $value = $data[$field->name] ?? null;
+
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            $formatted = match ($field->type) {
+                FormFieldType::Boolean => $value ? __('Yes') : __('No'),
+                FormFieldType::Date => self::formatDate($value),
+                default => e((string) $value),
+            };
+
+            $parts[] = '<span class="text-gray-500 dark:text-gray-400">' . e($field->name) . ':</span> ' . $formatted;
+        }
+
+        if (empty($parts)) {
+            return null;
+        }
+
+        return new HtmlString(implode(' · ', $parts));
+    }
+
+    private static function formatDate(mixed $value): string
+    {
+        try {
+            return Carbon::parse($value)->format('d.m.Y');
+        } catch (\Exception) {
+            return e((string) $value);
+        }
     }
 }
