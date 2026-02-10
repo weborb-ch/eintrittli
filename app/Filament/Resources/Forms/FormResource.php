@@ -48,6 +48,11 @@ class FormResource extends Resource
         return auth()->user()?->isAdmin() ?? false;
     }
 
+    public static function canDeleteAny(): bool
+    {
+        return auth()->user()?->isAdmin() ?? false;
+    }
+
     public static function form(Schema $schema): Schema
     {
         return FormForm::configure($schema);
