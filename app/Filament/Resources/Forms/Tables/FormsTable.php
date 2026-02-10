@@ -41,7 +41,8 @@ class FormsTable
                     ->icon(Heroicon::OutlinedDocumentDuplicate)
                     ->url(fn (Form $record) => FormResource::getUrl('create', [
                         'duplicate' => $record->getKey(),
-                    ])),
+                    ]))
+                    ->visible(fn () => auth()->user()?->isAdmin() ?? false),
                 EditAction::make(),
             ])
             ->toolbarActions([
