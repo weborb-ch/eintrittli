@@ -1,38 +1,77 @@
-FROM php:8.5-apache
+# Stage 1: PHP dependencies & extensions
+FROM php:8.5-cli AS builder
 
-RUN apt-get update && apt-get install -y \
-    git \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
     unzip \
-    libzip-dev \
+    libpq-dev \
+    libonig-dev \
     libicu-dev \
-    libpq-dev
+    libzip-dev \
+    libpng-dev \
+  && docker-php-ext-install \
+    pdo_pgsql \
+    pgsql \
+    intl \
+    zip \
+    gd \
+  && apt-get autoremove -y && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-install pdo_pgsql pgsql mbstring zip intl
-
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-WORKDIR /var/www/html
-
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
-
-COPY package.json package-lock.json ./
-RUN npm ci
+WORKDIR /app
 
 COPY . .
 
-RUN composer dump-autoload --optimize
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+  && composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts \
+  && rm -f bootstrap/cache/packages.php bootstrap/cache/services.php \
+  && php artisan package:discover
+
+# Stage 2: Frontend assets
+FROM node:22-alpine AS assets
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci --audit false
+
+COPY --from=builder /app/vendor ./vendor
+COPY vite.config.js ./
+COPY resources ./resources
+COPY app ./app
+
 RUN npm run build
-RUN rm -rf node_modules
 
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Stage 3: Production image
+FROM php:8.5-cli
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    libicu76 \
+    libzip5 \
+    libpng16-16t64 \
+    libonig5 \
+  && apt-get autoremove -y && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
+COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
+
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
+
+WORKDIR /app
+
+COPY . .
+COPY --from=builder /app/vendor ./vendor
+COPY --from=builder /app/bootstrap/cache ./bootstrap/cache
+COPY --from=assets /app/public/build ./public/build
+
+RUN mkdir -p storage/framework/{sessions,views,cache} \
+    storage/app/public \
+    bootstrap/cache \
+  && chown -R www-data:www-data storage bootstrap/cache
+
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
