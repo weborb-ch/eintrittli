@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property bool $is_required
  * @property bool $must_be_true
  * @property string|null $content
- * @property string $name
+ * @property string|null $name
  * @property int $sort_order
  */
 class FormField extends Model
