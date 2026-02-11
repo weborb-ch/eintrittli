@@ -3,12 +3,12 @@ services:
     image: ghcr.io/weborb-ch/eintrittli:latest
     # build: .  # Uncomment to build locally instead of using the published image
     ports:
-      - "127.0.0.1:8000:8000"
+      - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
     environment:
-      - APP_KEY=${APP_KEY}
+      - APP_KEY=${APP_KEY} # Use a base64 string here
       - APP_ENV=production
       - APP_DEBUG=false
       - APP_URL=${APP_URL:-http://localhost:8000}
@@ -19,13 +19,19 @@ services:
       - DB_USERNAME=eintrittli
       - DB_PASSWORD=${DB_PASSWORD:-secret}
     volumes:
-      - storage:/var/www/html/storage/app
+      - storage:/app/storage/app
+    healthcheck:
+      test: ["CMD-SHELL", "php -r \"exit(str_contains(file_get_contents('http://localhost:8000/up'), '') ? 0 : 1);\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     restart: unless-stopped
 
   db:
     image: postgres:18-alpine
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=eintrittli
       - POSTGRES_USER=eintrittli
@@ -38,5 +44,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  pgdata:
   storage:
+  db_data:
