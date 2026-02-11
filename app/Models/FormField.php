@@ -11,7 +11,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property array<int, string>|null $options
  * @property bool $is_required
  * @property bool $must_be_true
- * @property string $name
+ * @property string|null $content
+ * @property string|null $name
  * @property int $sort_order
  */
 class FormField extends Model
@@ -21,6 +22,7 @@ class FormField extends Model
         'type',
         'name',
         'options',
+        'content',
         'is_required',
         'must_be_true',
         'sort_order',

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Forms\Pages;
 use App\Filament\Resources\Forms\FormResource;
 use App\Models\Form;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Str;
 
 class CreateForm extends CreateRecord
 {
@@ -31,12 +32,15 @@ class CreateForm extends CreateRecord
         $this->form->fill([
             'name' => $form->name.' ('.__('Copy').')',
             'description' => $form->description,
-            'fields' => $form->fields->map(fn ($field) => [
-                'type' => $field->type->value,
-                'name' => $field->name,
-                'options' => $field->options,
-                'is_required' => $field->is_required,
-                'must_be_true' => $field->must_be_true,
+            'fields' => $form->fields->mapWithKeys(fn ($field) => [
+                (string) Str::uuid() => [
+                    'type' => $field->type->value,
+                    'name' => $field->name,
+                    'options' => $field->options,
+                    'content' => $field->content,
+                    'is_required' => $field->is_required,
+                    'must_be_true' => $field->must_be_true,
+                ],
             ])->toArray(),
         ]);
     }

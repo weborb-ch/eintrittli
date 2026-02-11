@@ -122,6 +122,10 @@ class RegistrationsTable
         $parts = [];
 
         foreach ($fields as $field) {
+            if ($field->type === FormFieldType::Description) {
+                continue;
+            }
+
             $value = $data[$field->name] ?? null;
 
             if ($value === null || $value === '') {

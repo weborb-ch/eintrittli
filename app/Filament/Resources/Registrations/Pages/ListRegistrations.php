@@ -36,6 +36,7 @@ class ListRegistrations extends ListRecords
         /** @var Collection<string, FormField> $allFields */
         $allFields = $registrations
             ->flatMap(fn (Registration $r) => $r->event->form->fields ?? collect())
+            ->filter(fn (FormField $f) => $f->type !== FormFieldType::Description)
             ->unique('name')
             ->keyBy('name');
 

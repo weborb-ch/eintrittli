@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Forms\Schemas;
 
 use App\Enums\FormFieldType;
 use App\Models\Form;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -45,7 +46,8 @@ class FormForm
                     ->schema([
                         TextInput::make('name')
                             ->label(__('Name'))
-                            ->required()
+                            ->required(fn ($get) => $get('type') !== FormFieldType::Description->value)
+                            ->hidden(fn ($get) => $get('type') === FormFieldType::Description->value)
                             ->maxLength(255),
                         Select::make('type')
                             ->options(collect(FormFieldType::cases())->mapWithKeys(fn ($type) => [$type->value => $type->label()]))
@@ -54,9 +56,15 @@ class FormForm
                         TagsInput::make('options')
                             ->visible(fn ($get) => $get('type') === FormFieldType::Select->value)
                             ->placeholder(__('Add option')),
+                        MarkdownEditor::make('content')
+                            ->label(__('Content'))
+                            ->visible(fn ($get) => $get('type') === FormFieldType::Description->value)
+                            ->required(fn ($get) => $get('type') === FormFieldType::Description->value)
+                            ->columnSpanFull(),
                         Toggle::make('is_required')
                             ->label(__('Is required'))
-                            ->default(true),
+                            ->default(true)
+                            ->hidden(fn ($get) => $get('type') === FormFieldType::Description->value),
                         Toggle::make('must_be_true')
                             ->label(__('Must be accepted?'))
                             ->visible(fn ($get) => $get('type') === FormFieldType::Boolean->value),

@@ -10,6 +10,7 @@ enum FormFieldType: string
     case Date = 'date';
     case Email = 'email';
     case Select = 'select';
+    case Description = 'description';
 
     public function label(): string
     {
@@ -20,6 +21,7 @@ enum FormFieldType: string
             self::Date => __('Date'),
             self::Email => __('Email'),
             self::Select => __('Selection'),
+            self::Description => __('Description'),
         };
     }
 }

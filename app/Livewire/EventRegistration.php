@@ -10,6 +10,7 @@ use App\Models\Registration;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
@@ -24,6 +25,7 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 /**
@@ -204,7 +206,17 @@ class EventRegistration extends SimplePage
                 FormFieldType::Select => Select::make("entries.{$entryKey}.{$field->name}")
                     ->label($field->name)
                     ->options(array_combine($field->options ?? [], $field->options ?? [])),
+                FormFieldType::Description => Placeholder::make("description_{$entryKey}_{$field->id}")
+                    ->hiddenLabel()
+                    ->content(new HtmlString(Str::markdown($field->content ?? '')))
+                    ->columnSpanFull(),
             };
+
+            if ($field->type === FormFieldType::Description) {
+                $components[] = $component;
+
+                continue;
+            }
 
             if ($field->is_required) {
                 $component->required();
@@ -258,6 +270,10 @@ class EventRegistration extends SimplePage
 
         foreach (array_keys($this->entries) as $entryKey) {
             foreach ($fields as $field) {
+                if ($field->type === FormFieldType::Description) {
+                    continue;
+                }
+
                 $path = "entries.{$entryKey}.{$field->name}";
 
                 $fieldRules = [];
