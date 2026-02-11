@@ -208,7 +208,7 @@ class EventRegistration extends SimplePage
                     ->options(array_combine($field->options ?? [], $field->options ?? [])),
                 FormFieldType::Description => Placeholder::make("description_{$entryKey}_{$field->id}")
                     ->hiddenLabel()
-                    ->content(new HtmlString(Str::markdown($field->content ?? '')))
+                    ->content(new HtmlString($field->content ?? ''))
                     ->columnSpanFull(),
             };
 
