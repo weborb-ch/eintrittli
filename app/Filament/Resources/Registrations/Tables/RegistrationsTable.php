@@ -57,7 +57,7 @@ class RegistrationsTable
             ->filters([
                 SelectFilter::make('event')
                     ->label(__('Event'))
-                    ->options(fn () => \App\Models\Event::orderBy('name')->pluck('name', 'id'))
+                    ->relationship('event', 'name')
                     ->multiple()
                     ->preload()
                     ->searchable(),
