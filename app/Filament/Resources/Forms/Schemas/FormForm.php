@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Forms\Schemas;
 
 use App\Enums\FormFieldType;
 use App\Models\Form;
-use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -56,7 +56,7 @@ class FormForm
                         TagsInput::make('options')
                             ->visible(fn ($get) => $get('type') === FormFieldType::Select->value)
                             ->placeholder(__('Add option')),
-                        MarkdownEditor::make('content')
+                        RichEditor::make('content')
                             ->label(__('Content'))
                             ->visible(fn ($get) => $get('type') === FormFieldType::Description->value)
                             ->required(fn ($get) => $get('type') === FormFieldType::Description->value)
