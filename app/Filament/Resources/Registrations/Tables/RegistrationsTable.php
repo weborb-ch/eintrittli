@@ -22,7 +22,6 @@ class RegistrationsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->poll('5s')
             ->modifyQueryUsing(fn (Builder $query) => $query->with('event.form.fields'))
             ->columns([
                 TextColumn::make('confirmation_code')
