@@ -50,7 +50,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                NightwatchIgnoreLivewire::class
+                NightwatchIgnoreLivewire::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
