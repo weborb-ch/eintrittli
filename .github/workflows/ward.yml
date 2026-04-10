@@ -18,7 +18,7 @@ jobs:
         run: echo "$HOME/go/bin" >> $GITHUB_PATH
 
       - name: Run Ward
-        run: ward scan . --output sarif --output-file ward-report.sarif
+        run: ward scan . --output sarif
 
       - name: Upload SARIF
         if: always()
