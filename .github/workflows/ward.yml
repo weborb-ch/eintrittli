@@ -1,0 +1,20 @@
+name: Ward Security Scan
+on: [push, pull_request]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Ward
+        run: go install github.com/eljakani/ward@latest
+
+      - name: Run Ward
+        run: ward init && ward scan . --output json
+
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ward-report.sarif
