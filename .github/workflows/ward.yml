@@ -18,7 +18,14 @@ jobs:
         run: echo "$HOME/go/bin" >> $GITHUB_PATH
 
       - name: Run Ward
-        run: ward scan . --output sarif
+        run: ward scan . --output json
+
+      - name: Convert to SARIF
+        uses: advanced-security/sarif-convert@v1
+        with:
+          input: ward-report.json
+          output: ward-report.sarif
+          tool-name: Ward
 
       - name: Upload SARIF
         if: always()
