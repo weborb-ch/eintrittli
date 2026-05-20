@@ -22,7 +22,7 @@ class CreateAdminCommand extends Command
         $username = text(
             label: 'Username',
             required: true,
-            validate: fn(string $value) => Validator::make(
+            validate: fn (string $value) => Validator::make(
                 ['username' => $value],
                 ['username' => ['required', 'string', 'max:255', Rule::unique('users', 'username')]],
             )->errors()->first('username'),
@@ -36,7 +36,7 @@ class CreateAdminCommand extends Command
         password(
             label: 'Confirm password',
             required: true,
-            validate: fn(string $value) => $value !== $password ? 'The passwords do not match.' : null,
+            validate: fn (string $value) => $value !== $password ? 'The passwords do not match.' : null,
         );
 
         $user = User::query()->create([

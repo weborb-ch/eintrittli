@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\Login;
 use App\Http\Middleware\NightwatchIgnoreLivewire;
 use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
@@ -30,7 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->viteTheme('resources/css/filament/admin/theme.css')
-            ->login(\App\Filament\Pages\Auth\Login::class)
+            ->login(Login::class)
             ->authGuard('web')
             ->colors([
                 'primary' => '#74B1FF',
@@ -64,13 +65,13 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->userMenuItems([
                 'profile' => Action::make('profile')
-                    ->label(fn() => auth()->user()->username)
-                    ->url(fn(): string => EditProfilePage::getUrl())
+                    ->label(fn () => auth()->user()->username)
+                    ->url(fn (): string => EditProfilePage::getUrl())
                     ->icon('heroicon-m-user-circle'),
             ])
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
-                fn(): ?View => config('app.is_demo')
+                fn (): ?View => config('app.is_demo')
                     ? view('filament.pages.auth.demo-hint')
                     : null,
             );
