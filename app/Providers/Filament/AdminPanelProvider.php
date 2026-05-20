@@ -59,18 +59,18 @@ class AdminPanelProvider extends PanelProvider
                 FilamentEditProfilePlugin::make()
                     ->slug('profile')
                     ->setIcon('heroicon-o-user')
-                    ->shouldShowEditProfileForm(false)
+                    ->shouldShowEmailForm(false)
                     ->shouldRegisterNavigation(false),
             ])
             ->userMenuItems([
                 'profile' => Action::make('profile')
-                    ->label(fn () => auth()->user()->username)
-                    ->url(fn (): string => EditProfilePage::getUrl())
+                    ->label(fn() => auth()->user()->username)
+                    ->url(fn(): string => EditProfilePage::getUrl())
                     ->icon('heroicon-m-user-circle'),
             ])
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
-                fn (): ?View => config('app.is_demo')
+                fn(): ?View => config('app.is_demo')
                     ? view('filament.pages.auth.demo-hint')
                     : null,
             );
