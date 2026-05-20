@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Registrations\Tables;
 
 use App\Enums\FormFieldType;
+use App\Models\Form;
 use App\Models\Registration;
 use Carbon\Carbon;
 use Filament\Actions\BulkActionGroup;
@@ -62,7 +63,7 @@ class RegistrationsTable
                     ->searchable(),
                 SelectFilter::make('form')
                     ->label(__('Form'))
-                    ->options(fn () => \App\Models\Form::orderBy('name')->pluck('name', 'id'))
+                    ->options(fn () => Form::orderBy('name')->pluck('name', 'id'))
                     ->multiple()
                     ->preload()
                     ->searchable()

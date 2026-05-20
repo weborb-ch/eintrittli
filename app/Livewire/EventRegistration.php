@@ -16,6 +16,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Pages\SimplePage;
 use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Form as FormComponent;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -118,7 +119,7 @@ class EventRegistration extends SimplePage
             ->key('registration-form-section');
     }
 
-    /** @return array<int, \Filament\Schemas\Components\Component> */
+    /** @return array<int, Component> */
     protected function getMultiEntryFormSchema(): array
     {
         $entrySections = [];
@@ -171,7 +172,7 @@ class EventRegistration extends SimplePage
         ];
     }
 
-    /** @return array<int, \Filament\Schemas\Components\Component> */
+    /** @return array<int, Component> */
     protected function getFieldsForEntry(string $entryKey): array
     {
         $components = [];
