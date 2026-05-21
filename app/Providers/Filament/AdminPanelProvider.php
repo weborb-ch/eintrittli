@@ -61,6 +61,7 @@ class AdminPanelProvider extends PanelProvider
                     ->slug('profile')
                     ->setIcon('heroicon-o-user')
                     ->shouldShowEmailForm(false)
+                    ->shouldShowEditProfileForm(config('app.is_demo') ? false : true)
                     ->shouldRegisterNavigation(false),
             ])
             ->userMenuItems([

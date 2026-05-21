@@ -22,18 +22,21 @@ class UserForm
                             ->label(__('Username'))
                             ->required()
                             ->unique(ignoreRecord: true)
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->disabled(fn ($record) => config('app.is_demo') ? true : false),
                         TextInput::make('password')
                             ->label(__('Password'))
                             ->password()
                             ->required(fn ($record) => $record === null)
                             ->dehydrated(fn ($state) => filled($state))
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->disabled(fn ($record) => config('app.is_demo') ? true : false),
                         Select::make('role')
                             ->label(__('Role'))
                             ->options(collect(UserRole::cases())->mapWithKeys(fn (UserRole $role) => [$role->value => $role->label()]))
                             ->required()
-                            ->default(UserRole::Member->value),
+                            ->default(UserRole::Member->value)
+                            ->disabled(fn ($record) => config('app.is_demo') ? true : false),
                     ]),
                 Section::make(__('Role Information'))
                     ->schema([
