@@ -6,6 +6,8 @@ on:
     tags: ['v*']
   pull_request:
     branches: [main]
+  schedule:
+    - cron: '0 3 * * *'  # Every day at 03:00 UTC
 
 permissions:
   contents: read
