@@ -91,5 +91,11 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": {
+        "filament": {
+            "type": "composer",
+            "url": "https://packages.filamentphp.com/composer"
+        }
+    }
 }
