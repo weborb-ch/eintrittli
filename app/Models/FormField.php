@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\FormFieldType;
+use Database\Factories\FormFieldFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -17,6 +19,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class FormField extends Model
 {
+    /** @use HasFactory<FormFieldFactory> */
+    use HasFactory;
+
     protected $fillable = [
         'form_id',
         'type',

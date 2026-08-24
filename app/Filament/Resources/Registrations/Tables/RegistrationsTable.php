@@ -3,9 +3,10 @@
 namespace App\Filament\Resources\Registrations\Tables;
 
 use App\Enums\FormFieldType;
+use App\Filament\Actions\ExportRegistrationsBulkAction;
+use App\Filament\Exports\RegistrationExportColumn;
 use App\Models\Form;
 use App\Models\Registration;
-use Carbon\Carbon;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -104,6 +105,7 @@ class RegistrationsTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    ExportRegistrationsBulkAction::make(),
                     DeleteBulkAction::make()
                         ->requiresConfirmation(),
                 ]),
@@ -126,19 +128,13 @@ class RegistrationsTable
                 continue;
             }
 
-            $value = $data[$field->name] ?? null;
+            $formatted = RegistrationExportColumn::formatFieldValue($data[$field->name] ?? null, $field->type);
 
-            if ($value === null || $value === '') {
+            if ($formatted === '') {
                 continue;
             }
 
-            $formatted = match ($field->type) {
-                FormFieldType::Boolean => $value ? __('Yes') : __('No'),
-                FormFieldType::Date => self::formatDate($value),
-                default => e((string) $value),
-            };
-
-            $parts[] = '<span class="text-gray-500 dark:text-gray-400">'.e($field->name).':</span> '.$formatted;
+            $parts[] = '<span class="text-gray-500 dark:text-gray-400">'.e($field->name).':</span> '.e($formatted);
         }
 
         if (empty($parts)) {
@@ -146,14 +142,5 @@ class RegistrationsTable
         }
 
         return new HtmlString(implode(' · ', $parts));
-    }
-
-    private static function formatDate(mixed $value): string
-    {
-        try {
-            return Carbon::parse($value)->format('d.m.Y');
-        } catch (\Exception) {
-            return e((string) $value);
-        }
     }
 }
