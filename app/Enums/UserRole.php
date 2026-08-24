@@ -18,8 +18,8 @@ enum UserRole: string
     public function description(): string
     {
         return match ($this) {
-            self::Admin => __('Full access to all features including user management and CSV export.'),
-            self::Member => __('Read access to all data. Full access to registrations except CSV export.'),
+            self::Admin => __('Full access to all features including user management and exports.'),
+            self::Member => __('Read access to all data. Full access to registrations except exports.'),
         };
     }
 }
