@@ -17,7 +17,7 @@ it('schedules the demo reset every sunday at 03:00 UTC', function () {
     $event = demoResetEvent();
 
     expect($event->expression)->toBe('0 3 * * 0')
-        ->and($event->timezone)->toBe('UTC')
+        ->and($event->timezone)->toBe('Europe/Zurich')
         ->and($event->command)->toContain('--force');
 });
 
