@@ -9,8 +9,6 @@ on:
     tags: ['v*']
   pull_request:
     branches: [main]
-  schedule:
-    - cron: '0 3 * * 0'  # Every Sunday at 03:00 UTC
 
 jobs:
   lint:
@@ -132,20 +130,3 @@ jobs:
       - name: Deploy to Laravel Cloud
         run: |
           curl -X POST "${{ secrets.LARAVEL_CLOUD_DEPLOY_HOOK }}"
-
-  demo-reset:
-    name: Weekly Demo Reset
-    runs-on: ubuntu-latest
-    if: github.event_name == 'schedule'
-    permissions: {}
-    steps:
-      - name: Get latest release SHA
-        id: release
-        run: |
-          TAG_NAME=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r '.name')
-          SHA=$(curl -s "https://api.github.com/repos/${{ github.repository }}/git/ref/tags/${TAG_NAME}" | jq -r '.object.sha')
-          echo "sha=$SHA" >> $GITHUB_OUTPUT
-
-      - name: Trigger demo reset
-        run: |
-          curl -X POST "${{ secrets.LARAVEL_CLOUD_DEPLOY_HOOK }}?commit_sha=${{ steps.release.outputs.sha }}"
