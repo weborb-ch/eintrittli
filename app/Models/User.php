@@ -28,11 +28,6 @@ class User extends Authenticatable implements FilamentUser, HasName
         return $this->role === UserRole::Admin;
     }
 
-    public function isMember(): bool
-    {
-        return $this->role === UserRole::Member;
-    }
-
     /** @var list<string> */
     protected $fillable = [
         'username',
