@@ -13,8 +13,8 @@ class ResetDemoCommand extends Command
 
     public function handle(): int
     {
-        if (App::environment('production') && ! $this->option('force')) {
-            $this->error('This command cannot run in production without --force flag.');
+        if (App::environment('production') && ! config('app.is_demo')) {
+            $this->error('This command only runs on demo instances (IS_DEMO=true).');
 
             return self::FAILURE;
         }
