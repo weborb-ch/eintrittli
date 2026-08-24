@@ -5,6 +5,7 @@
 .env.production
 .phpactor.json
 .phpunit.result.cache
+/.claude/skills/filament-blueprint
 /.fleet
 /.idea
 /.nova

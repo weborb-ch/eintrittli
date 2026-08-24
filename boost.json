@@ -7,11 +7,11 @@
     "herd_mcp": false,
     "mcp": true,
     "packages": [
-        "filament/filament",
-        "filament/blueprint"
+        "filament/filament"
     ],
     "sail": false,
     "skills": [
+        "infer-conventions",
         "laravel-best-practices",
         "configure-nightwatch",
         "pest-testing",

@@ -214,4 +214,19 @@ return [
 
     'partitioned' => env('SESSION_PARTITIONED_COOKIE', false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Session Serialization
+    |--------------------------------------------------------------------------
+    |
+    | This value controls the serialization strategy for session data. We use
+    | PHP's native serialization, which allows PHP objects to be stored in
+    | the session. Switching to "json" would log out all active users.
+    |
+    | Supported: "json", "php"
+    |
+    */
+
+    'serialization' => 'php',
+
 ];
